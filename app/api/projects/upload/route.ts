@@ -3,6 +3,7 @@ import prisma from '../../../lib/client'
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/app/lib/auth';
 import UploadToCloudinary from './cloudinary';
+import UploadToPublicFolder from './local-upload';
 
 
 export async function POST(request: Request) {
@@ -29,7 +30,8 @@ export async function POST(request: Request) {
     const year =data.get('year')?.toString()||'';
 
 
-    const{imageUrls,videoUrls}=await UploadToCloudinary({files,videos})
+    // const{imageUrls,videoUrls}=await UploadToCloudinary({files,videos})
+    const {imageUrls,videoUrls}=await UploadToPublicFolder({title,files,videos})
 
 
 
