@@ -1,19 +1,9 @@
 import { NextResponse } from 'next/server';
 import prisma from '../../../lib/client'
-// import {z} from 'zod'
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/app/lib/auth';
 import UploadToCloudinary from './cloudinary';
-// const uploadRequest=z.object({
-//   title: z.string().min(3,'title is required').max(30),
-//   description: z.string().min(3,'description is required').max(1000),
-//   category: z.string().min(4,'category is required').max(20),
-//   client: z.string().min(3,'client is required'),
-//   location: z.string().min(3,'location is required'),
-//   typology:z.string().min(3,'typology is required'),
-//   year:z.string().min(4,'year is required').max(4),
 
-// });
 
 export async function POST(request: Request) {
   try {
@@ -25,7 +15,6 @@ export async function POST(request: Request) {
         }
     }
 
-    // const data = await request.json();
 
     const data = await request.formData();
     const files = data.getAll('files') as File[];
@@ -38,16 +27,8 @@ export async function POST(request: Request) {
     const size=data.get('size')?.toString()||'';
     const typology=data.get('typology')?.toString()||'';
     const year =data.get('year')?.toString()||'';
-    console.log("got data===>",data)
-    // const validation= uploadRequest.safeParse(data)
-    //     console.log("body",data)
-    
-    //     if (!validation.success) return NextResponse.json({
-    //       error:validation.error.format(),
-    //       message:"Failed to upload project",
-    //       user:null,
-    //       token:"",
-    //      },{status:400})
+
+
     const{imageUrls,videoUrls}=await UploadToCloudinary({files,videos})
 
 
