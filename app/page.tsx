@@ -84,7 +84,7 @@ export default function Home() {
           <Button color="primary" onPress={handlePress} className="self-start font-bold mt-5">See Projects We Have Done</Button>
         </div>
         <div className="md:w-1/2 w-full p-5">
-          <Image src={BestHome} alt="Home design" className="w-full h-full object-center border-red-600 rounded-3xl border-3" />
+          <Image src={BestHome} alt="Home design" className="w-full h-full object-center rounded-3xl border-white " />
         </div>
       </div>
 
