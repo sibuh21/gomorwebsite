@@ -61,33 +61,12 @@ export default function Nav() {
   return (
     <div className="flex items-center">
       {/* Logo / List Icon */}
-      <motion.div
-        onHoverStart={() => setIsHovered(true)}
-        onHoverEnd={() => setIsHovered(false)}
-        onClick={() => handleOpen()}
-        className="cursor-pointer items-center"
-      >
-        {isHovered || isOpen ? (
-          /* List Icon (☰) when hovered or sidebar is open */
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.2 }}
-            className="flex"
-          >
-            <svg width="30" height="30"  fill="none">
-              <path
-                d="M3 6h18M3 12h18M3 18h18"
-                stroke="black"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </svg>
-            <h1 className="font-bold text-lg items-center">Gomor Architects </h1>
-          </motion.div>
-        ) : (
-
-            <motion.div className="flex space-x-1">
+            <motion.div 
+            onHoverStart={() => setIsHovered(true)}
+            onHoverEnd={() => setIsHovered(false)}
+            onClick={() => handleOpen()}
+            className="cursor-pointer items-center flex space-x-1"
+            >
               <Image 
               src={fav}
               alt="logo image"
@@ -96,9 +75,6 @@ export default function Nav() {
               />
               <h1 className="font-bold text-lg items-center">Gomor Architects </h1>
             </motion.div>
-
-          )}
-      </motion.div>
 
       {/* modal appears on left side */}
       {isOpen && (

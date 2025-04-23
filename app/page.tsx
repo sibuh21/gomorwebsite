@@ -81,7 +81,7 @@ export default function Home() {
           <h2 className="text-base md:text-lg font-medium text-white pt-5" >
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi cum deserunt...
           </h2>
-          <Button color="primary" onPress={handlePress} className="self-start font-bold mt-5">See Projects We Have Done</Button>
+          <Button color="primary" onPress={handlePress} className="mt-5"><p className="font-bold text-ellipsis text-wrap">See Projects We Have Done</p></Button>
         </div>
         <div className="md:w-1/2 w-full p-5">
           <Image src={BestHome} alt="Home design" className="w-full h-full object-center rounded-3xl border-white " />

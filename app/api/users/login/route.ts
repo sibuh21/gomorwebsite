@@ -27,18 +27,18 @@ export async function POST(request:NextRequest){
     const body=await request.json()
     const validation=loginRequest.safeParse(body)
     if(!validation.success)
-        return NextResponse.json(validation.error.format(),{status:400})
+        return NextResponse.json({message:validation.error.errors.map((error)=>error.message).join(',')},{status:400})
     const user = await prisma.user.findUnique({
       where: {email:body.email}
     });
 
     if (!user || !(await bcrypt.compare(body.password, user.password))) {
-      return NextResponse.json(new Error("Invalid credentials"),{status:403});
+      return NextResponse.json({message:"Invalid email or password"},{status:403});
     }
     
     const token = generateToken(user)
   
-    const response= NextResponse.json({error:null,message: "Login successful", token:token},{status:200 });
+    const response= NextResponse.json({message: "Login successful"},{status:200 });
 
     response.cookies.set('token', token, {
       httpOnly: true,
@@ -49,8 +49,8 @@ export async function POST(request:NextRequest){
 
     return response;
        
-  }catch(err){
-    return NextResponse.json({error:err,message:"Failed to Login",token:""},{status:500})
+  }catch(err:any){
+    return NextResponse.json({message:err},{status:500})
   }
 
 }

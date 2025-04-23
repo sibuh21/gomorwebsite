@@ -1,9 +1,8 @@
 "use client";
+
 import {Spinner} from "@radix-ui/themes"
 import {Input, Button,addToast } from "@heroui/react";
 import axios from "axios";
-
-
 import { useState } from "react";
 
  const Signup= () => {
@@ -23,11 +22,7 @@ import { useState } from "react";
         setProcessing(true);
         try{
             const res=await axios.post('/api/users/signup',user)
-
-            if (res.status!==201) throw new Error(res.data.error)
-
             localStorage.setItem("token",res.data.token)
-            sessionStorage.setItem("token",res.data.token)
 
             setUser(initialState)
             addToast({
@@ -35,12 +30,11 @@ import { useState } from "react";
             description:"Registration Successfull",
             color:"success"
            })
-        }catch(error){
-            console.log("error",error)
+        }catch(err:any){
             setErr('User Registration Failed')
             addToast({
                 title:"User Registration",
-                description:"User Registration Failed",
+                description: err.response.data.message,
                 color:"danger"
             });
         }finally{
@@ -49,8 +43,8 @@ import { useState } from "react";
     }
     return <div className="flex flex-col mt-5  ">
                 {(!processing)?
-                    <form className="flex flex-col m-auto w-96 h-auto p-3 space-y-3" onSubmit={handleSubmit}>
-                        <p>{err}</p>
+                    <form className="flex flex-col m-auto  w-full max-w-[384px] md:max-w-96 h-auto p-3 space-y-3" onSubmit={handleSubmit}>
+                        {err&&<p className="bg-red-700 text-white text-center p-2 border-1 rounded-md">{err}</p>}
                         <Input
                             className="p-2 border rounded"
                             type="text"

@@ -59,11 +59,7 @@ const ListProjects = ({ isLoading, data }: ListProps) => {
               return (
                 <motion.li
                   key={project.id}
-                  className={`relative bg-white shadow-lg rounded-lg transition-all duration-500 cursor-pointer ${
-                    isActive
-                      ? "w-[95vw] md:w-[85vw] lg:w-[80vw] p-8"
-                      : "w-[50vw] md:w-[60vw] lg:w-[50vw] p-6"
-                  }`}
+                  className="relative bg-white shadow-lg rounded-lg transition-all duration-500 cursor-pointer w-[95vw] sm:w-[85vw] md:w-[50vw] p-8"
                   onClick={() => toggleProject(project.id)}
                   initial={{ opacity: 0, y: 100 }}
                   whileInView={{ opacity: 1, y: 0 }}

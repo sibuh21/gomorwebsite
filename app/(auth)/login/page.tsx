@@ -4,9 +4,9 @@ import { useState } from "react";
 import {Spinner} from "@heroui/react"
 import {Input, Button } from "@heroui/react";
 import { addToast } from "@heroui/react";
-import { setTimeout } from "timers";
+import { useRouter } from "next/navigation";
  const Login=()=>{
-
+    const router=useRouter()
     const [param,setParam]=useState({password:"",email:""});
     const[processing,setProcessing]=useState(false);
     const [err,setErr]=useState('');
@@ -17,23 +17,21 @@ import { setTimeout } from "timers";
         try{
             const response=await axios.post('/api/users/login',param)
 
-            if(response.status!==200) throw new Error(response.data.error)
-
             localStorage.setItem("token",response.data.token)
+            
             setParam({password:"",email:""})
-             addToast({
+            addToast({
                 title: "User Login",
                 description: "Log in successful",
                 color: "success",
               })
             
-           setTimeout(()=>window.location.reload(),5000)  
-        }catch(error){
-            console.log("error",error)
-            setErr('Failed to log in')
+              router.push('/')
+        }catch(err:any){
+            setErr(err.response.data.message)
             addToast({
                 title: "User Login",
-                description: "Failed to log in",
+                description: err.response.data.message,
                 color: "danger",
                 timeout:5000,
                 radius:"md"
@@ -43,15 +41,15 @@ import { setTimeout } from "timers";
         }
 
     }
-    return <div className="grid justify-items-center mt-4">
-        <div>
-            <p>Login</p>
+    return <div className="flex flex-col items-center mt-4">
+        {/* <div>
+            
         </div>
-        <div>
-        {!processing? <form className="space-y-3 flex flex-col w-96 h-auto" onSubmit={handleSubmit}>
-            <div>
-                <p>{err}</p>
-            </div>
+        <div> */}
+        {!processing? <form className="flex flex-col w-full max-w-[384px] md:w-96 h-auto space-y-3" onSubmit={handleSubmit}>
+            
+            {err&&  <p className="bg-red-700 text-white text-center border-1 p-2 rounded-md">{err}</p>}
+            <p className="text-bold text-center">Login</p>
             <Input 
                 label="Email" 
                 type="email"
@@ -69,6 +67,6 @@ import { setTimeout } from "timers";
             <Button color="primary" type="submit">Login</Button>
         </form>:<Spinner classNames={{label: "text-foreground mt-4"}} label="simple" variant="simple" />}  
         </div>
-    </div>
+    // </div>
 }
 export default Login

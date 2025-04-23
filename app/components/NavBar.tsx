@@ -76,13 +76,13 @@ const NavBar = () => {
             <>
               <Link
                 href="/signup"
-                className="border-2 rounded-full px-4 py-2 bg-blue-700"
+                className="border-2 rounded-md px-4 py-2 bg-gray-900 text-white shadow-lg"
               >
                 Signup
               </Link>
               <Link
                 href="/login"
-                className="border-2 rounded-full px-4 py-2 bg-green-700"
+                className="border-2 rounded-md px-4 py-2 bg-gray-900 text-white shadow-md"
               >
                 Login
               </Link>
@@ -126,14 +126,14 @@ const NavBar = () => {
                 <>
                   <Link
                     href="/signup"
-                    className="text-lg border px-4 py-2 rounded-full bg-blue-700"
+                    className="text-lg border px-4 py-2 bg-gray-900 text-white rounded-md shadow-lg"
                     onClick={() => setIsOpen(false)}
                   >
                     Signup
                   </Link>
                   <Link
                     href="/login"
-                    className="text-lg border px-4 py-2 rounded-full bg-green-700"
+                    className="text-lg border px-4 py-2 bg-gray-900 text-white rounded-md shadow-lg"
                     onClick={() => setIsOpen(false)}
                   >
                     Login

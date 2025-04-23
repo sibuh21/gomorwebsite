@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { decode } from 'jsonwebtoken';
 
 // Define protected routes
-const protectedRoutes = ['/upload']; // add your own
+const protectedRoutes = ['/upload'];
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
