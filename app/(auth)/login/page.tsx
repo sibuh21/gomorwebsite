@@ -16,8 +16,7 @@ import { useRouter } from "next/navigation";
         setProcessing(true);
         try{
             const response=await axios.post('/api/users/login',param)
-
-            localStorage.setItem("token",response.data.token)
+            // localStorage.setItem("token",response.data.token)
             
             setParam({password:"",email:""})
             addToast({

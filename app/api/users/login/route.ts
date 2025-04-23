@@ -14,13 +14,6 @@ const loginRequest=z.object(
 
 
 
-export const config = {
-    api: {
-      bodyParser: false,
-    },
-  };
-  
-
 export async function POST(request:NextRequest){
   
   try{
@@ -44,7 +37,7 @@ export async function POST(request:NextRequest){
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       path: '/',
-      maxAge: 60 * 60 * 24, // 1 day
+      maxAge: 60,
     });
 
     return response;

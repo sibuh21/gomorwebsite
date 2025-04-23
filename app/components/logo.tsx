@@ -29,15 +29,8 @@ export default function Nav() {
 
     useEffect(()=>{
       async function getUser(){
-        const token =localStorage.getItem("token");
-    
-        if(!token) return;
   
-        const res =await fetch("/api/users/isAdmin",{
-                   headers:{
-                    Authorization:`Bearer ${token}`
-                   }
-                });
+        const res =await fetch("/api/users/isLoggedIn");
         if (res.ok) {
            const data = await res.json();
            setRole(data.user.role);
@@ -91,8 +84,8 @@ export default function Nav() {
                         (role==='ADMIN')&&
                               <Link href={"/upload"}
                                 className={classNames({
-                                'text-stone-800': "/upload"===currentPath,
-                                'hover:text-red-600': "/upload"!==currentPath,
+                                'text-stone-800 font-bold': "/upload"===currentPath,
+                                'hover:text-red-600 font-bold': "/upload"!==currentPath,
                                 'transition-colors':true,
                                 })}
                                 onClick={onClose}
