@@ -4,9 +4,7 @@ import { useState } from "react";
 import {Spinner} from "@heroui/react"
 import {Input, Button } from "@heroui/react";
 import { addToast } from "@heroui/react";
-import { useRouter } from "next/navigation";
  const Login=()=>{
-    const router=useRouter()
     const [param,setParam]=useState({password:"",email:""});
     const[processing,setProcessing]=useState(false);
     const [err,setErr]=useState('');
@@ -15,17 +13,16 @@ import { useRouter } from "next/navigation";
         e.preventDefault();
         setProcessing(true);
         try{
-            const response=await axios.post('/api/users/login',param)
-            // localStorage.setItem("token",response.data.token)
-            
+            await axios.post('/api/users/login',param)
+            setErr('')
             setParam({password:"",email:""})
             addToast({
                 title: "User Login",
                 description: "Log in successful",
                 color: "success",
               })
-            
-              router.push('/')
+            //   router.replace('/')
+               window.location.replace('/')
         }catch(err:any){
             setErr(err.response.data.message)
             addToast({

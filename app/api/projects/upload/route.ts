@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import prisma from '../../../lib/client'
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/app/lib/auth';
-import UploadToCloudinary from './cloudinary';
+// import UploadToCloudinary from './cloudinary';
 import UploadToPublicFolder from './local-upload';
 
 

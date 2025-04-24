@@ -22,7 +22,7 @@ import {
 
 
 export default function Nav() {
-  const [isHovered, setIsHovered] = useState(false);
+  // const [isHovered, setIsHovered] = useState(false);
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
   const currentPath=usePathname()
   const [role,setRole]=useState("");
@@ -55,8 +55,8 @@ export default function Nav() {
     <div className="flex items-center">
       {/* Logo / List Icon */}
             <motion.div 
-            onHoverStart={() => setIsHovered(true)}
-            onHoverEnd={() => setIsHovered(false)}
+            // onHoverStart={() => setIsHovered(true)}
+            // onHoverEnd={() => setIsHovered(false)}
             onClick={() => handleOpen()}
             className="cursor-pointer items-center flex space-x-1"
             >
