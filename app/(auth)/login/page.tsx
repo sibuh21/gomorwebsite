@@ -38,10 +38,6 @@ import { addToast } from "@heroui/react";
 
     }
     return <div className="flex flex-col items-center mt-4">
-        {/* <div>
-            
-        </div>
-        <div> */}
         {!processing? <form className="flex flex-col w-full max-w-[384px] md:w-96 h-auto space-y-3" onSubmit={handleSubmit}>
             
             {err&&  <p className="bg-red-700 text-white text-center border-1 p-2 rounded-md">{err}</p>}
