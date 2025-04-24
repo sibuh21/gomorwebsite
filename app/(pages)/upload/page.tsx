@@ -30,8 +30,6 @@ export default function UploadPage() {
     size: '',    
     typology: '',
     category:'',
-    imagePaths:[''],
-    videoPaths:['']
   });
   const [files, setFiles] = useState<File[]>([]);
   const [videos,setVideos]=useState<File[]>([]);
@@ -39,52 +37,52 @@ export default function UploadPage() {
   const [loading, setLoading] = useState(false);
 
   
-  const handleUpload = async () => {
-    if (files.length === 0 || videos.length === 0) {
-      throw new Error("Please select image(s) and video(s) to upload.");
-    }
-    let imageUrls:string[]=[]
-    let videoUrls:string[]=[]
+  // const handleUpload = async () => {
+  //   if (files.length === 0 || videos.length === 0) {
+  //     throw new Error("Please select image(s) and video(s) to upload.");
+  //   }
+  //   let imageUrls:string[]=[]
+  //   let videoUrls:string[]=[]
     
-    const uploadFiles = async (fileArray: File[]) => {
-      const cloudName = 'drpc1o6de';
-      const uploadPreset = 'archweb';
-      const uploadedUrls: string[] = [];
+  //   const uploadFiles = async (fileArray: File[]) => {
+  //     const cloudName = 'drpc1o6de';
+  //     const uploadPreset = 'archweb';
+  //     const uploadedUrls: string[] = [];
   
-      for (const file of fileArray) {
-        if (!(file instanceof File)) {
-          console.warn('Skipping invalid file:', file);
-          continue;
-        }
+  //     for (const file of fileArray) {
+  //       if (!(file instanceof File)) {
+  //         console.warn('Skipping invalid file:', file);
+  //         continue;
+  //       }
   
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', uploadPreset);
-        formData.append('folder', 'archweb');
+  //       const formData = new FormData();
+  //       formData.append('file', file);
+  //       formData.append('upload_preset', uploadPreset);
+  //       formData.append('folder', 'archweb');
   
-        const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
-          method: 'POST',
-          body: formData,
-        });
+  //       const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+  //         method: 'POST',
+  //         body: formData,
+  //       });
   
-        const data = await response.json();
+  //       const data = await response.json();
   
-        if (response.ok && data.secure_url) {
-          uploadedUrls.push(data.secure_url);
-        } else {
-          console.error('Upload failed:', data);
-          throw new Error(data.error?.message || 'Cloudinary upload failed');
-        }
-      }
+  //       if (response.ok && data.secure_url) {
+  //         uploadedUrls.push(data.secure_url);
+  //       } else {
+  //         console.error('Upload failed:', data);
+  //         throw new Error(data.error?.message || 'Cloudinary upload failed');
+  //       }
+  //     }
   
-      return uploadedUrls;
-    };
+  //     return uploadedUrls;
+  //   };
   
-     imageUrls = await uploadFiles(files);
-     videoUrls = await uploadFiles(videos);
+  //    imageUrls = await uploadFiles(files);
+  //    videoUrls = await uploadFiles(videos);
   
-    return { imageUrls, videoUrls };
-  };
+  //   return { imageUrls, videoUrls };
+  // };
   
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -92,12 +90,29 @@ export default function UploadPage() {
     setLoading(true);
     
     try {
-      const paths= await handleUpload();
-      if (paths===undefined) throw new Error('Failed to upload files')
+      // const paths= await handleUpload();
+      // if (paths===undefined) throw new Error('Failed to upload files')
       
-      formData.imagePaths=paths.imageUrls;
-      formData.videoPaths=paths.videoUrls;
-      const response = await axios.post('/api/projects/upload', formData);
+      // formData.imagePaths=paths.imageUrls;
+      // formData.videoPaths=paths.videoUrls;
+      const data = new FormData();
+      data.append('title', formData.title);
+      data.append('description', formData.description);
+      data.append('category',formData.category);
+      data.append('client', formData.client);
+      data.append('location', formData.location);
+      data.append('size',formData.size);
+      data.append('typology', formData.typology);
+      data.append('year', formData.year);
+      
+      files.forEach(file => {
+        data.append('files', file);
+      });
+      videos.forEach(video=>{
+        data.append('videos',video);
+      });
+      console.log("data",data)
+      const response = await axios.post('/api/projects/upload', data);
 
       if (response.status!==201) {
         console.log("response",response)

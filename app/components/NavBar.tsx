@@ -8,11 +8,12 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@heroui/react";
 import { Menu, X, Home } from "lucide-react";
+import  Logout  from "./logout";
 
 const NavBar = () => {
   const currentPath = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const [token, setToken] = useState<string | null>(null);
+  const [role, setRole] = useState<string | null>(null);
 
   const links = [
     { href: "/", label: "Home", icon: <Home size={18} /> },
@@ -20,17 +21,27 @@ const NavBar = () => {
     { href: "/interior-design", label: "Interior Design" },
   ];
 
-  function handleLogout() {
-    localStorage.removeItem("token");
-    window.location.reload();
-  }
+
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedToken = localStorage.getItem("token");
-      setToken(storedToken);
+    
+    async function getUser(){
+      
+      const res =await fetch("/api/users/isLoggedIn");
+      if (res.ok) {
+         const data = await res.json();
+         setRole(data.user.role);
+         console.log("verified user",data.user);
+
+      } else{
+        setRole('');
+      }
+
     }
+    getUser()
   }, []);
+
+  
 
   return (
     <header className="relative z-50 bg-white border-b px-4 py-4 md:px-8 lg:px-12 shadow-sm">
@@ -68,21 +79,19 @@ const NavBar = () => {
 
         {/* Desktop Auth Buttons */}
         <div className="hidden md:flex items-center space-x-4">
-          {token ? (
-            <Button onPress={handleLogout} color="warning">
-              Logout
-            </Button>
+          {role ? (
+            <Logout />
           ) : (
             <>
               <Link
                 href="/signup"
-                className="border-2 rounded-full px-4 py-2 bg-blue-700"
+                className="border-2 rounded-md px-4 py-2 bg-gray-900 text-white shadow-md"
               >
                 Signup
               </Link>
               <Link
                 href="/login"
-                className="border-2 rounded-full px-4 py-2 bg-green-700"
+                className="border-2 rounded-md px-4 py-2 bg-gray-900 text-white shadow-md"
               >
                 Login
               </Link>
@@ -118,22 +127,22 @@ const NavBar = () => {
                 </Link>
               ))}
 
-              {token ? (
-                <Button onPress={handleLogout} color="warning">
+              {role ? (
+                <Button  color="warning">
                   Logout
                 </Button>
               ) : (
                 <>
                   <Link
                     href="/signup"
-                    className="text-lg border px-4 py-2 rounded-full bg-blue-700"
+                    className="text-lg border px-4 py-2 bg-gray-900 text-white rounded-md shadow-lg"
                     onClick={() => setIsOpen(false)}
                   >
                     Signup
                   </Link>
                   <Link
                     href="/login"
-                    className="text-lg border px-4 py-2 rounded-full bg-green-700"
+                    className="text-lg border px-4 py-2 bg-gray-900 text-white rounded-md shadow-lg"
                     onClick={() => setIsOpen(false)}
                   >
                     Login

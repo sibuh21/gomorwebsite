@@ -7,7 +7,6 @@ import {generateToken} from "../../../lib/auth"
 const signupRequest=z.object({
   first_name: z.string().min(3,'firstName is required').max(30),
   last_name: z.string().min(3,'lastName is required').max(30),
-  // username: z.string().min(3,"username is required").max(30),
   password: z.string().min(4,'password is required').max(10),
   email: z.string().email().endsWith('@gmail.com','email is required'),
   phone: z.string()
@@ -15,24 +14,13 @@ const signupRequest=z.object({
 });
 
 
-
-
-export const config = {
-    api: {
-      bodyParser: false,
-    },
-  };
-
 export async function POST(request:NextRequest){
     const body=await request.json()
     const validation= signupRequest.safeParse(body)
     console.log("body",body)
 
     if (!validation.success) return NextResponse.json({
-      error:validation.error.format(),
-      message:"Failed to signup",
-      user:null,
-      token:"",
+      message:validation.error.errors.map((error)=>error.message).join(','),
      },{status:400})
   
   
@@ -41,10 +29,10 @@ export async function POST(request:NextRequest){
         email:body.email}
      });
 
-    if (existingUser) return NextResponse.json({error: new Error("User already exists"),
-      message:"Failed to signup",
-      user:null,
-      token:"",},
+    if (existingUser) return NextResponse.json(
+      {
+      message:"User already exists",
+    },
       {
       status:400
      });
@@ -63,12 +51,15 @@ export async function POST(request:NextRequest){
      })
   
   const token = generateToken(newUser);
+
+  const response= NextResponse.json({status:200 });
+
+    response.cookies.set('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      maxAge: 60 * 60 * 1, // 1 hour
+    });
   
-   return NextResponse.json(
-    {error:null, 
-    message: "Signup successful", 
-    user:newUser,
-    token:token,},
-    {status:201}
-);
+   return response
 };

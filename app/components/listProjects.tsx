@@ -39,7 +39,7 @@ const ListProjects = ({ isLoading, data }: ListProps) => {
   };
 
   return (
-    <div className="relative w-full max-w-screen-xl mx-auto p-4">
+    <div className="relative w-full max-w-screen-xl mx-auto p-4 bg-gray-200">
       {isLoading ? (
         <div className="mt-40 flex justify-center">
           <LoadingThreeDotsJumping />
@@ -59,11 +59,7 @@ const ListProjects = ({ isLoading, data }: ListProps) => {
               return (
                 <motion.li
                   key={project.id}
-                  className={`relative bg-white shadow-lg rounded-lg transition-all duration-500 cursor-pointer ${
-                    isActive
-                      ? "w-[95vw] md:w-[85vw] lg:w-[80vw] p-8"
-                      : "w-[50vw] md:w-[60vw] lg:w-[50vw] p-6"
-                  }`}
+                  className="relative bg-white shadow-lg rounded-lg transition-all duration-500 cursor-pointer w-[95vw] sm:w-[85vw] md:w-[50vw] p-8"
                   onClick={() => toggleProject(project.id)}
                   initial={{ opacity: 0, y: 100 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -78,7 +74,7 @@ const ListProjects = ({ isLoading, data }: ListProps) => {
 
                   {!isActive ? (
                     <div className="flex gap-1">
-                      <div className="flex flex-col items-end w-1/4  h-52 md:h-64 ">
+                      <div className="flex flex-col items-end w-1/4  h-52 md:h-64 m-1 ">
                         <p className="font-bold">{project.title}</p>
                         <p>{project.location}</p>
                       </div>
@@ -93,7 +89,7 @@ const ListProjects = ({ isLoading, data }: ListProps) => {
                     </div>
                   ) : (
                     <div
-                      className="flex gap-6 overflow-x-scroll p-2 items-stretch"
+                      className="flex gap-6 overflow-x-scroll p-2 items-stretch m-2"
                       style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
                     >
                       <style jsx>{`

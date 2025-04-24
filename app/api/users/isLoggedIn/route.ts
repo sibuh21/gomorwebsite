@@ -3,8 +3,8 @@ import { verifyToken } from "../../../lib/auth";
 
 export async function GET(req: NextRequest) {
   try {
-    const token = req.headers.get("authorization")?.split(" ")[1];
-
+    // const token = req.headers.get("authorization")?.split(" ")[1];
+    const token=req.cookies.get('token')?.value
     if (!token) {
       return NextResponse.json({ error: "Token missing" }, { status: 401 });
     }
@@ -16,6 +16,6 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ user: decoded }, { status: 200 });
   } catch (err) {
-    return NextResponse.json({ error: err instanceof Error ? err.message : "An unknown error occurred" }, { status: 400 });
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Internal error occurred" }, { status: 500 });
   }
 }
