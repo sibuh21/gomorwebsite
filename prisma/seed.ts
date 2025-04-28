@@ -1,7 +1,8 @@
-const { PrismaClient } = require('@prisma/client');
+// const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
+import prisma from "@/app/lib/client";
 
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 
 
 async function main() {
