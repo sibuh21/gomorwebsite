@@ -1,30 +1,17 @@
-'use client';
-
-import "react-responsive-carousel/lib/styles/carousel.min.css";
 import ListProjects from "@/app/components/listProjects";
+import prisma  from "../../lib/client"; 
 
-
-import { Project } from "@/app/components/listProjects";
-
-import { useState, useEffect } from 'react'
- 
-export default function Architecture() {
-  const [data, setData] = useState<Project[]>([])
-  const [isLoading, setLoading] = useState(true)
- 
-  useEffect(() => {
-    fetch('/api/projects/list?category=ARCHITECTURAL')
-      .then((res) => res.json())
-      .then((data) => {
-        setData(data)
-        setLoading(false)
-      })
-  }, []) 
+export default async function Architecture() {
+  
+  const data = await prisma.project.findMany({
+    where: {
+      category: 'ARCHITECTURAL',
+    },
+  });
 
   return (
-        <>
-         <ListProjects isLoading={isLoading} data={data} /> 
-        </>)
+    <>
+    <ListProjects data={data} />
+    </>
+  );
 }
-
- 

@@ -3,10 +3,9 @@
 import { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import LoadingThreeDotsJumping from "./LoadTreeDotsJamping";
 
-export interface Project {
-  id: string;
+export type Project ={
+  id: number;
   title: string;
   client:string
   typology:string
@@ -24,10 +23,9 @@ export interface Project {
 
 type ListProps = {
   data: Project[];
-  isLoading: boolean;
 };
 
-const ListProjects = ({ isLoading, data }: ListProps) => {
+const ListProjects = ({ data }: ListProps) => {
   const [expandedProjects, setExpandedProjects] = useState<string[]>([]);
 
   const toggleProject = (projectId: string) => {
@@ -40,11 +38,7 @@ const ListProjects = ({ isLoading, data }: ListProps) => {
 
   return (
     <div className="relative w-full max-w-screen-xl mx-auto p-4 bg-gray-200">
-      {isLoading ? (
-        <div className="mt-40 flex justify-center">
-          <LoadingThreeDotsJumping />
-        </div>
-      ) : (
+      
         <div className="space-y-6 py-6 md:pt-10">
           <h2 className="font-extrabold text-2xl md:text-3xl text-center">
             Projects Done
@@ -54,13 +48,13 @@ const ListProjects = ({ isLoading, data }: ListProps) => {
              className="flex flex-col items-center gap-8"
           >
             {data.map((project, index) => {
-              const isActive = expandedProjects.includes(project.id);
+              const isActive = expandedProjects.includes(project.id.toString());
 
               return (
                 <motion.li
                   key={project.id}
                   className="relative bg-white shadow-lg rounded-lg transition-all duration-500 cursor-pointer w-[95vw] sm:w-[85vw] md:w-[50vw] p-8"
-                  onClick={() => toggleProject(project.id)}
+                  onClick={() => toggleProject(project.id.toString())}
                   initial={{ opacity: 0, y: 100 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{
@@ -168,7 +162,6 @@ const ListProjects = ({ isLoading, data }: ListProps) => {
           </ul>
 
         </div>
-      )}
     </div>
   );
 };
