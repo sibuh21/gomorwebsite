@@ -1,7 +1,7 @@
 'use client';
 import Link from "next/link";
 import Image from "next/image";
-import BestHome from "../public/home.webp";
+import BestHome from "../public/1DET_Trading.png";
 import EnterAnimation from "./components/EnterAnimation";
 import { Button } from "@heroui/react";
 import Partners from "./components/partners";
