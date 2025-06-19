@@ -45,7 +45,7 @@ export async function POST(request: Request) {
         size:size,
         typology:typology,
         year:year,
-        category: category==='ARCHITECTURAL'?'ARCHITECTURAL':category==='INTERIRO'?'INTERIOR':'LANDSCAPE'===category?'LANDSCAPE':'STRUCTURAL',
+        category: category==='ARCHITECTURAL'?'ARCHITECTURAL':category==='INTERIOR'?'INTERIOR':'LANDSCAPE'===category?'LANDSCAPE':'STRUCTURAL',
         imagePaths: imageUrls,
         videoPaths:videoUrls,
       },

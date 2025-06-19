@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import LoadingThreeDotsJumping from "./LoadTreeDotsJamping";
 
@@ -79,9 +78,9 @@ const ListProjects = ({ isLoading, data }: ListProps) => {
                         <p>{project.location}</p>
                       </div>
 
-                      <Image
+                      <img
                         className="rounded-md object-cover w-3/4 h-52 md:h-64"
-                        src={project.imagePaths[0]}
+                        src={encodeURI(project.imagePaths[0])}
                         alt="Project Thumbnail"
                         width={700}
                         height={500}
@@ -118,9 +117,9 @@ const ListProjects = ({ isLoading, data }: ListProps) => {
                           key={`image-${index}`}
                           className="flex-shrink-0 w-72 md:w-96 lg:w-[600px] h-72 md:h-80 lg:h-96 flex flex-col justify-between"
                         >
-                          <Image
+                          <img
                             className="rounded-md object-cover w-full h-full"
-                            src={path}
+                            src={encodeURI(path)}
                             alt={`Project Image ${index + 1}`}
                             width={700}
                             height={500}
@@ -142,9 +141,9 @@ const ListProjects = ({ isLoading, data }: ListProps) => {
                           key={`image-${index}`}
                           className="flex-shrink-0 w-72 md:w-96 lg:w-[600px] h-72 md:h-80 lg:h-96 flex flex-col justify-between"
                         >
-                          <Image
+                          <img
                             className="rounded-md object-cover w-full h-full"
-                            src={path}
+                            src={encodeURI(path)}
                             alt={`Project Image ${index + 1}`}
                             width={700}
                             height={500}
@@ -157,7 +156,7 @@ const ListProjects = ({ isLoading, data }: ListProps) => {
                           key={`video-${index}`}
                           className="flex-shrink-0 w-72 md:w-96 lg:w-[600px] h-72 md:h-80 lg:h-96 flex flex-col justify-between"
                         >
-                          <video className="rounded-md w-full h-full object-cover" src={path} controls />
+                          <video className="rounded-md w-full h-full object-cover" src={encodeURI(path)} controls />
                         </div>
                       ))}
                     </div>
