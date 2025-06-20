@@ -37,7 +37,7 @@ const ListProjects = ({ data }: ListProps) => {
   };
 
   return (
-    <div className="relative w-full max-w-screen-xl mx-auto p-4 bg-gray-200">
+    <div className="relative w-full max-w-screen-xl h-screen mx-auto p-4 bg-gray-50">
       
         <div className="space-y-6 py-6 md:pt-10">
           <h2 className="font-extrabold text-2xl md:text-3xl text-center">
