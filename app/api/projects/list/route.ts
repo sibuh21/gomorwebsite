@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import prisma from '../../../lib/client'
 
 
 
-export async function GET(request:NextRequest){
+export async function GET(){
     // const { searchParams } = new URL(request.url);
 
     // const category = searchParams.get("category") as Prisma.EnumCategoryFilter 

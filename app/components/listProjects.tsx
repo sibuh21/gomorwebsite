@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 export type Project ={
   id: number;
@@ -72,7 +73,7 @@ const ListProjects = ({ data }: ListProps) => {
                         <p>{project.location}</p>
                       </div>
 
-                      <img
+                      <Image
                         className="rounded-md object-cover w-3/4 h-52 md:h-64"
                         src={encodeURI(project.imagePaths[0])}
                         alt="Project Thumbnail"
@@ -111,7 +112,7 @@ const ListProjects = ({ data }: ListProps) => {
                           key={`image-${index}`}
                           className="flex-shrink-0 w-72 md:w-96 lg:w-[600px] h-72 md:h-80 lg:h-96 flex flex-col justify-between"
                         >
-                          <img
+                          <Image
                             className="rounded-md object-cover w-full h-full"
                             src={encodeURI(path)}
                             alt={`Project Image ${index + 1}`}
@@ -135,7 +136,7 @@ const ListProjects = ({ data }: ListProps) => {
                           key={`image-${index}`}
                           className="flex-shrink-0 w-72 md:w-96 lg:w-[600px] h-72 md:h-80 lg:h-96 flex flex-col justify-between"
                         >
-                          <img
+                          <Image
                             className="rounded-md object-cover w-full h-full"
                             src={encodeURI(path)}
                             alt={`Project Image ${index + 1}`}
