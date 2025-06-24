@@ -18,7 +18,10 @@ export default function App() {
       };
       fetchProjects();
     }, []);
-  const filteredProjects = projects.filter((project) => project.category === category);
+  const filteredProjects = projects.filter((project) => {
+    if (category === "") return true;
+    return project.category === category
+  });
   
   return (
     <>  

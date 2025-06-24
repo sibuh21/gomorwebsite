@@ -5,9 +5,10 @@ import BestHome from "../public/home.webp";
 import EnterAnimation from "./components/EnterAnimation";
 import { Button } from "@heroui/react";
 import Partners from "./components/partners";
-import Location from "./components/location";
 import React from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
+const Map = dynamic(() => import("./components/location"), { ssr: false });
 
 export default function Home() {
   const router = useRouter();
@@ -134,7 +135,7 @@ export default function Home() {
         </div>
         <div className="flex-1">
           <h2 className="text-center text-2xl md:text-3xl font-bold mb-4">Our Location</h2>
-          <Location />
+          <Map />
         </div>
       </div>
     </div>

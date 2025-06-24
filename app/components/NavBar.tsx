@@ -1,16 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import Logo from "./logo";
 import classNames from "classnames";
-import { usePathname } from "next/navigation";
-import AppMenu from "./menu";
-import { category } from "./menu";
+import AppMenu, { category } from "./menu";
 
 const NavBar = ({setCategory}: {setCategory: (category: string) => void}) => {
-  const currentPath = usePathname();
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [id, setId] = useState<string>("");
 
   const categories:category[] = [
     { id: "ARCHITECTURAL", label: "Architecture" },
@@ -43,12 +40,13 @@ const NavBar = ({setCategory}: {setCategory: (category: string) => void}) => {
               <li
                 key={category.id}
                 className={classNames(
-                  "text-lg flex items-center",
-                  category.id === currentPath
-                    ? "text-stone-800 font-semibold"
-                    : "text-gray-700 hover:text-red-600"
+                  "text-lg flex items-center text-gray-700 hover:text-red-600 hover:rounded-md",
+                  id === category.id && "border-b-2 border-black rounded-md"
                 )}
-                onClick={() => setCategory(category.id)}
+                onClick={() => {
+                  setCategory(category.id)
+                  setId(category.id)
+                }}
               >
                 { category.label}
               </li>

@@ -18,11 +18,12 @@ import {
   Button,
   useDisclosure,
 } from "@heroui/react";
+import About from "./about";
+import Career from "./carearAndPeople";
 
 
 
-export default function Nav() {
-  // const [isHovered, setIsHovered] = useState(false);
+export default function Logo() {
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
   const currentPath=usePathname()
   const [role,setRole]=useState("");
@@ -93,8 +94,8 @@ export default function Nav() {
                                  Upload Project
                               </Link>
                                
-                       }
-                    
+                    }
+                    <Link href="/about">About</Link>                    
                 </div>
                 </DrawerBody>
                 <DrawerFooter>
