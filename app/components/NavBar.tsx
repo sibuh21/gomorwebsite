@@ -12,8 +12,8 @@ const NavBar = ({setCategory}: {setCategory: (category: string) => void}) => {
   const categories:category[] = [
     { id: "ARCHITECTURAL", label: "Architecture" },
     { id: "INTERIOR", label: "Interior-Design" },
-    { id: "LANDSCAPE", label: "Landscape" },
-    { id: "STRUCTURAL", label: "Structural" },
+    // { id: "LANDSCAPE", label: "Landscape" },
+    // { id: "STRUCTURAL", label: "Structural" },
   ];
 
   useEffect(() => {
