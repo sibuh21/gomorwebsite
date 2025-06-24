@@ -217,7 +217,6 @@ export default function UploadPage() {
           accept='video/*'
           className="w-full p-2 border rounded"
           onChange={(e) => setVideos(Array.from(e.target.files || []))}
-          required
         />
         
         <button
