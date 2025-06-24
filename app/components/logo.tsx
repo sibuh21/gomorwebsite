@@ -18,10 +18,6 @@ import {
   Button,
   useDisclosure,
 } from "@heroui/react";
-import About from "./about";
-import Career from "./carearAndPeople";
-
-
 
 export default function Logo() {
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
