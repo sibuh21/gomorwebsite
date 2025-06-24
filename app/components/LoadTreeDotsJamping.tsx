@@ -16,16 +16,19 @@ function LoadingThreeDotsJumping() {
     }
 
     return (
-        <motion.div
-            animate="jump"
-            transition={{ staggerChildren: -0.2, staggerDirection: -1 }}
-            className="container"
-        >
-            <motion.div className="dot" variants={dotVariants} />
-            <motion.div className="dot" variants={dotVariants} />
-            <motion.div className="dot" variants={dotVariants} />
-            <StyleSheet />
-        </motion.div>
+        <div className="mt-16">
+
+            <motion.div
+                animate="jump"
+                transition={{ staggerChildren: -0.2, staggerDirection: -1 }}
+                className="container"
+            >
+                <motion.div className="dot" variants={dotVariants} />
+                <motion.div className="dot" variants={dotVariants} />
+                <motion.div className="dot" variants={dotVariants} />
+                <StyleSheet />
+            </motion.div>
+        </div>
     )
 }
 

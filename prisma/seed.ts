@@ -1,28 +1,34 @@
-const { PrismaClient } = require('@prisma/client');
-const bcrypt = require('bcryptjs');
+import bcrypt from "bcryptjs";
+import prisma from "../app/lib/client";
 
-const prisma = new PrismaClient();
 
 
 async function main() {
-    const adminExists = await prisma.user.findUnique({
-        where: { email: "sibuh@gmail.com" },
-    });
-
-    if (!adminExists) {
+   
         const hashedPassword = await bcrypt.hash("sibuh", 10);
-        await prisma.user.create({
-            data: {
+        await prisma.user.upsert({
+            create:{
                 first_name:"sibuh",
                 last_name:"desalew",
                 email: "sibuh@gmail.com",
                 password: hashedPassword,
                 phone:"251918171615",
-                role: "ADMIN",
+                role: "ADMIN"
             },
-        });
+            update:{
+                first_name:"sibuh",
+                last_name:"desalew",
+                email: "sibuh@gmail.com",
+                password: hashedPassword,
+                phone:"251918171615",
+                role: "ADMIN"
+            },
+            where:{
+                email:"sibuh@gmail.com"
+            }
+        })
+        
         console.log("Admin user seeded.");
-    }
 }
 
 main().catch((e) => {

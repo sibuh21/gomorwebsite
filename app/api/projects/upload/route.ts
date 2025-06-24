@@ -30,8 +30,8 @@ export async function POST(request: Request) {
     const year =data.get('year')?.toString()||'';
 
 
-    // const{imageUrls,videoUrls}=await UploadToCloudinary({files,videos})
-    const {imageUrls,videoUrls}=await UploadToPublicFolder({title,files,videos})
+     //const{imageUrls,videoUrls}=await UploadToCloudinary({files,videos})
+     const {imageUrls,videoUrls}=await UploadToPublicFolder({title,files,videos})
 
 
 

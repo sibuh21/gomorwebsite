@@ -1,30 +1,16 @@
-'use client';
-
-import "react-responsive-carousel/lib/styles/carousel.min.css";
-
-
-import { Project } from "@/app/components/listProjects";
-
-import { useState, useEffect } from 'react'
 import ListProjects from "@/app/components/listProjects";
- 
-export default function InteriorDesign() {
-  const [data, setData] = useState<Project[]>([])
-  const [isLoading, setLoading] = useState(true)
- 
-  useEffect(() => {
-    fetch('/api/projects/list?category=INTERIOR')
-      .then((res) => res.json())
-      .then((data) => {
-        setData(data)
-        setLoading(false)
-      })
-  }, [])
- 
- 
+import prisma  from "../../lib/client"; 
+
+export default async function Architecture() {
+  const data = await prisma.project.findMany({
+    where: {
+      category: 'INTERIOR',
+    },
+  });
+
   return (
-     <>
-     <ListProjects isLoading={isLoading} data={data} />
-     </>
-  )
+    <>
+    <ListProjects data={data} />
+    </>
+  );
 }
