@@ -1,8 +1,6 @@
-version: '3'
-
 services:
   db:
-    image: postgres
+    image: postgres:17
     environment:
       POSTGRES_USER: sibuh
       POSTGRES_PASSWORD: sibuh
@@ -15,4 +13,4 @@ services:
     networks:
       - my-net
 networks:
-    my-net:
+  my-net:

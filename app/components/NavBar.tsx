@@ -1,59 +1,196 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Logo from "./logo";
-import classNames from "classnames";
-import AppMenu, { category } from "./menu";
+import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import logo from "../../public/images/gomor.png";
+import { usePathname } from "next/navigation";
 
-const NavBar = ({setCategory}: {setCategory: (category: string) => void}) => {
-  const [isSmallScreen, setIsSmallScreen] = useState(false);
-  const [id, setId] = useState<string>("");
+interface SubCategory {
+  id: string;
+  label: string;
+  href: string;
+}
 
-  const categories:category[] = [
-    { id: "ARCHITECTURAL", label: "Architecture" },
-    { id: "INTERIOR", label: "Interior-Design" },
-    // { id: "LANDSCAPE", label: "Landscape" },
-    // { id: "STRUCTURAL", label: "Structural" },
-  ];
+interface NavCategory {
+  id: string;
+  label: string;
+  href: string;
+  subCategories?: SubCategory[];
+}
+
+const projectCategories: NavCategory[] = [
+  {
+    id: "all",
+    label: "All",
+    href: "/",
+  },
+  {
+    id: "architecture",
+    label: "Architecture",
+    href: "/?category=ARCHITECTURAL",
+    subCategories: [
+      { id: "all-arch", label: "View all", href: "/?category=ARCHITECTURAL" },
+    ],
+  },
+  {
+    id: "interiors",
+    label: "Interiors",
+    href: "/?category=INTERIOR",
+    subCategories: [
+      { id: "all-int", label: "View all", href: "/?category=INTERIOR" },
+    ],
+  },
+  {
+    id: "landscape",
+    label: "Landscape",
+    href: "/?category=LANDSCAPE",
+    subCategories: [
+      { id: "all-land", label: "View all", href: "/?category=LANDSCAPE" },
+    ],
+  },
+];
+
+const mainNavLinks = [
+  { label: "Projects", href: "/", hasDropdown: true },
+  { label: "About", href: "/about" },
+  { label: "People", href: "/people" },
+  { label: "Careers", href: "/career" },
+];
+
+const NavBar = () => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const [navHidden, setNavHidden] = useState(false);
+  const pathname = usePathname();
+
+  const handleScroll = useCallback(() => {
+    const currentScrollY = window.scrollY;
+    if (currentScrollY > lastScrollY && currentScrollY > 100) {
+      setNavHidden(true);
+    } else {
+      setNavHidden(false);
+    }
+    setLastScrollY(currentScrollY);
+  }, [lastScrollY]);
 
   useEffect(() => {
-    const checkScreenSize = () => {
-      setIsSmallScreen(window.innerWidth < 768)
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
     }
-    checkScreenSize()
-    window.addEventListener("resize", checkScreenSize)
     return () => {
-      window.removeEventListener("resize", checkScreenSize)
-    }
-  }, [])
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
 
   return (
-    <header className={`flex items-center ${isSmallScreen ? "justify-between" : "space-x-32"} bg-white border-b px-4 py-4 md:px-8 lg:px-12 shadow-sm`}>
-        <Logo />
-       
-      {isSmallScreen? (
-          <AppMenu categories={categories} setCategory={setCategory}/>
-          
-      ) : (
-          <ul className="flex items-center gap-5">
-            {categories.map((category) => (
-              <li
-                key={category.id}
-                className={classNames(
-                  "text-lg flex items-center text-gray-700 hover:text-red-600 hover:rounded-md",
-                  id === category.id && "border-b-2 border-black rounded-md"
+    <>
+      <nav className={`nav-wrapper ${navHidden && !mobileMenuOpen ? "nav-hidden" : ""}`}>
+        <div className="nav-container">
+          {/* Logo */}
+          <Link href="/" className="nav-logo">
+            <Image src={logo} alt="Gomor Architects" width={28} height={28} />
+            <span className="nav-logo-text">Gomor</span>
+          </Link>
+
+          {/* Desktop Nav Links */}
+          <ul className="nav-links">
+            {mainNavLinks.map((link) => (
+              <li key={link.label} className="nav-link-item">
+                {link.hasDropdown ? (
+                  <>
+                    <Link
+                      href={link.href}
+                      className={`nav-link ${pathname === link.href ? "active" : ""}`}
+                    >
+                      {link.label}
+                    </Link>
+                    <div className="nav-dropdown">
+                      {projectCategories.map((cat) => (
+                        <div key={cat.id} className="nav-dropdown-section">
+                          <Link href={cat.href} className="nav-dropdown-title">
+                            {cat.label}
+                          </Link>
+                          {cat.subCategories?.map((sub) => (
+                            <Link
+                              key={sub.id}
+                              href={sub.href}
+                              className="nav-dropdown-link view-all"
+                            >
+                              {sub.label}
+                            </Link>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <Link
+                    href={link.href}
+                    className={`nav-link ${pathname === link.href ? "active" : ""}`}
+                  >
+                    {link.label}
+                  </Link>
                 )}
-                onClick={() => {
-                  setCategory(category.id)
-                  setId(category.id)
-                }}
-              >
-                { category.label}
               </li>
             ))}
           </ul>
-      )}
-    </header>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            className="mobile-menu-toggle"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            <div className={`hamburger ${mobileMenuOpen ? "open" : ""}`}>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile Navigation Overlay */}
+      <div className={`mobile-nav-overlay ${mobileMenuOpen ? "open" : ""}`}>
+        <div className="mobile-nav-section">
+          <Link href="/" className="mobile-nav-title">
+            Projects
+          </Link>
+          {projectCategories.map((cat) => (
+            <Link key={cat.id} href={cat.href} className="mobile-nav-sublink">
+              {cat.label}
+            </Link>
+          ))}
+        </div>
+        <div className="mobile-nav-section">
+          <Link href="/about" className="mobile-nav-title">
+            About
+          </Link>
+        </div>
+        <div className="mobile-nav-section">
+          <Link href="/people" className="mobile-nav-title">
+            People
+          </Link>
+        </div>
+        <div className="mobile-nav-section">
+          <Link href="/career" className="mobile-nav-title">
+            Careers
+          </Link>
+        </div>
+      </div>
+    </>
   );
 };
 

@@ -1,24 +1,20 @@
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "@radix-ui/themes/styles.css";
 import { Providers } from "./providers";
 import { Metadata } from "next";
+import { Suspense } from "react";
 
-export const metadata:Metadata={
-  title:"gomor website",
-  description:"gomor architects website"
-}
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-
+export const metadata: Metadata = {
+  title: "Gomor | Gomor Architects",
+  description:
+    "Gomor Architects is an architecture and design studio creating innovative, sustainable projects worldwide.",
+  openGraph: {
+    title: "Gomor | Gomor Architects",
+    description:
+      "Gomor Architects is an architecture and design studio creating innovative, sustainable projects worldwide.",
+    type: "website",
+  },
+};
 
 export default function RootLayout({
   children,
@@ -27,11 +23,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+      </head>
+      <body style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif" }}>
         <Providers>
-            <main className="pl-5 min-h-screen" >{children}</main>
+          <Suspense>
+            {children}
+          </Suspense>
         </Providers>
       </body>
     </html>

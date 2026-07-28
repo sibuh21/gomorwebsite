@@ -1,64 +1,90 @@
 import Link from "next/link";
-import {
-  FiTwitter,
-  FiLinkedin,
-  FiFacebook,
-  FiInstagram,
-  FiPhoneIncoming
-} from "react-icons/fi";
 
 const Footer = () => {
-  const socialMedias = [
-    { link: "#", icon: <FiPhoneIncoming />, label: "+251912131415" },
-    { link: "https://www.instagram.com/", icon: <FiInstagram />, label: "Instagram" },
-    { link: "https://www.linkedin.com/", icon: <FiLinkedin />, label: "LinkedIn" },
-    { link: "https://www.facebook.com", icon: <FiFacebook />, label: "Facebook" },
-    { link: "https://www.google.com/", icon: <FiTwitter />, label: "Twitter" },
-  ];
-
   return (
-    <footer className="">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 bg-slate-200 py-6">
-          
-          {/* Info */}
-          <div className="flex flex-col gap-2 text-center sm:text-left pl-3 md:pl-6">
-            <h2 className="text-lg font-semibold">Gomor Architects</h2>
-            <p className="text-sm text-gray-700">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat suscipit
-              reiciendis adipisci placeat dolore dolorem!
-            </p>
-          </div>
-
-        {/* Nav Links */}
-        <div className="flex flex-col gap-3 text-center sm:text-left">
-          <Link href="/about" className="text-lg font-semibold hover:underline">About</Link>
-          <Link href="/people" className="text-lg font-semibold hover:underline">People</Link>
-          <Link href="/Career" className="text-lg font-semibold hover:underline">Career</Link>
+    <footer className="site-footer">
+      <div className="footer-grid">
+        {/* Email */}
+        <div>
+          <p className="footer-section-title">Email</p>
+          <Link href="mailto:info@gomor.com" className="footer-link">
+            info@gomor.com
+          </Link>
+          <Link href="mailto:press@gomor.com" className="footer-link">
+            press@gomor.com
+          </Link>
+          <Link href="mailto:careers@gomor.com" className="footer-link">
+            careers@gomor.com
+          </Link>
         </div>
-        {/* Social Media */}
-        <div className="flex flex-col gap-3 text-center sm:text-left">
-            <p className="text-lg font-semibold">Contacts</p>
-            {socialMedias.map((media) => (
-              <li key={media.link} className="flex items-center gap-2 justify-center sm:justify-start">
-                <Link href={media.link} target="_blank" rel="noopener noreferrer" className="text-2xl hover:text-yellow-400 transition-colors">
-                  {media.icon}
-                </Link>
-                <Link href={media.link} target="_blank" rel="noopener noreferrer" className="text-sm hover:underline">
-                  {media.label}
-                </Link>
-              </li>
-            ))}
-          </div>
 
-
-    </div>
-
-
-        {/* Copyright */}
-        <div className="text-center mt-6">
-          <p className="text-sm">© 2025 Gomor PLC</p>
+        {/* Office */}
+        <div>
+          <p className="footer-section-title">Office</p>
+          <p className="footer-link" style={{ cursor: "default" }}>
+            Addis Ababa, Ethiopia
+          </p>
+          <Link href="tel:+251912131415" className="footer-link">
+            +251 912 131 415
+          </Link>
+          <Link href="mailto:addis@gomor.com" className="footer-link">
+            addis@gomor.com
+          </Link>
         </div>
-  </footer>
+
+        {/* Social */}
+        <div>
+          <p className="footer-section-title">Social</p>
+          <Link
+            href="https://www.instagram.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="footer-link"
+          >
+            Instagram
+          </Link>
+          <Link
+            href="https://www.linkedin.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="footer-link"
+          >
+            LinkedIn
+          </Link>
+          <Link
+            href="https://www.facebook.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="footer-link"
+          >
+            Facebook
+          </Link>
+          <Link
+            href="https://x.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="footer-link"
+          >
+            X
+          </Link>
+        </div>
+
+        {/* Legal */}
+        <div>
+          <p className="footer-section-title">Legal</p>
+          <Link href="/about" className="footer-link">
+            Privacy Policy
+          </Link>
+          <Link href="/about" className="footer-link">
+            Terms of Service
+          </Link>
+        </div>
+      </div>
+
+      <div className="footer-bottom">
+        © {new Date().getFullYear()} Gomor Architects PLC. All rights reserved.
+      </div>
+    </footer>
   );
 };
 

@@ -2,9 +2,7 @@
 import About from "@/app/components/about";
 const Page = () => {
     return ( 
-        <>
         <About />
-        </>
      );
 }
  

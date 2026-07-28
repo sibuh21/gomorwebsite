@@ -1,12 +1,20 @@
-import { Button } from "@radix-ui/themes";
-const Landscape = () => {
-    return ( 
-        <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-        <Button>
-            Create New Landscape
-        </Button>
-        </div>
-     );
+import ListProjects from "@/app/components/listProjects";
+import NavBar from "@/app/components/NavBar";
+import Footer from "@/app/components/Footer";
+import prisma from "../../lib/client";
+
+export default async function Landscape() {
+  const data = await prisma.project.findMany({
+    where: {
+      category: "LANDSCAPE",
+    },
+  });
+
+  return (
+    <>
+      <NavBar />
+      <ListProjects data={data} />
+      <Footer />
+    </>
+  );
 }
- 
-export default Landscape;

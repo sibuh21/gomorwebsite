@@ -1,16 +1,20 @@
 import ListProjects from "@/app/components/listProjects";
-import prisma  from "../../lib/client"; 
+import NavBar from "@/app/components/NavBar";
+import Footer from "@/app/components/Footer";
+import prisma from "../../lib/client";
 
-export default async function Architecture() {
+export default async function InteriorDesign() {
   const data = await prisma.project.findMany({
     where: {
-      category: 'INTERIOR',
+      category: "INTERIOR",
     },
   });
 
   return (
     <>
-    <ListProjects data={data} />
+      <NavBar />
+      <ListProjects data={data} />
+      <Footer />
     </>
   );
 }

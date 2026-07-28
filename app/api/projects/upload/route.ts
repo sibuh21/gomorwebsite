@@ -3,7 +3,7 @@ import prisma from '../../../lib/client'
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/app/lib/auth';
 // import UploadToCloudinary from './cloudinary';
-import UploadToPublicFolder from './local-upload';
+// import UploadToPublicFolder from './local-upload';
 
 
 export async function POST(request: Request) {
@@ -17,41 +17,37 @@ export async function POST(request: Request) {
     }
 
 
-    const data = await request.formData();
-    const files = data.getAll('files') as File[];
-    const videos=data.getAll('videos') as File[];
-    const title = data.get('title')?.toString()||'';
-    const description = data.get('description')?.toString()||'';
-    const category=data.get('category')?.toString()||'';
-    const client=data.get('client')?.toString()||'';
-    const location=data.get('location')?.toString()||'';
-    const size=data.get('size')?.toString()||'';
-    const typology=data.get('typology')?.toString()||'';
-    const year =data.get('year')?.toString()||'';
-
-
-     //const{imageUrls,videoUrls}=await UploadToCloudinary({files,videos})
-     const {imageUrls,videoUrls}=await UploadToPublicFolder({title,files,videos})
-
-
+    const data = await request.json();
+    const { 
+      title = '', 
+      description = '', 
+      category = '', 
+      client = '', 
+      location = '', 
+      size = '', 
+      typology = '', 
+      year = '',
+      imageUrls = [],
+      videoUrls = []
+    } = data;
 
     // Save to database
     const project = await prisma.project.create({
       data: {
-        title: title,
-        description: description,
-        client:client,
-        location:location,
-        size:size,
-        typology:typology,
-        year:year,
-        category: category==='ARCHITECTURAL'?'ARCHITECTURAL':category==='INTERIOR'?'INTERIOR':'LANDSCAPE'===category?'LANDSCAPE':'STRUCTURAL',
+        title,
+        description,
+        client,
+        location,
+        size,
+        typology,
+        year,
+        category: category === 'ARCHITECTURAL' ? 'ARCHITECTURAL' : category === 'INTERIOR' ? 'INTERIOR' : category === 'LANDSCAPE' ? 'LANDSCAPE' : 'STRUCTURAL',
         imagePaths: imageUrls,
-        videoPaths:videoUrls,
+        videoPaths: videoUrls,
       },
     });
 
-    return NextResponse.json(project,{status:201});
+    return NextResponse.json(project, { status: 201 });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
