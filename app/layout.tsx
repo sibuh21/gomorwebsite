@@ -8,6 +8,11 @@ export const metadata: Metadata = {
   title: "Gomor | Gomor Architects",
   description:
     "Gomor Architects is an architecture and design studio creating innovative, sustainable projects worldwide.",
+  icons: {
+    icon: "/images/gomor.png",
+    shortcut: "/images/gomor.png",
+    apple: "/images/gomor.png",
+  },
   openGraph: {
     title: "Gomor | Gomor Architects",
     description:
