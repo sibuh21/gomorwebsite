@@ -1,0 +1,80 @@
+name: Deploy to Google Cloud Run
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SA_KEY }}
+  REGION: us-central1
+  SERVICE_NAME: gomorwebsite
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Generate Prisma client
+      run: npx prisma generate
+      
+    - name: Build application
+      run: npm run build
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+        NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
+        NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET }}
+        NEXT_PUBLIC_CLOUDINARY_FOLDER: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_FOLDER }}
+        
+    - name: Google Cloud Auth
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+        
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+      
+    - name: Configure Docker
+      run: gcloud auth configure-docker
+      
+    - name: Build and Push Docker image
+      run: |
+        docker build -t gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }} -f Dockerfile.cloudrun .
+        docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }}
+        
+    - name: Deploy to Cloud Run
+      run: |
+        gcloud run deploy $SERVICE_NAME \
+          --image gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }} \
+          --region $REGION \
+          --platform managed \
+          --allow-unauthenticated \
+          --memory 512Mi \
+          --cpu 1 \
+          --port 8080 \
+          --set-env-vars="DATABASE_URL=${{ secrets.DATABASE_URL }},SECRET_KEY=${{ secrets.SECRET_KEY }},NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }},NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }},NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=${{ secrets.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET }},NEXT_PUBLIC_CLOUDINARY_FOLDER=${{ secrets.NEXT_PUBLIC_CLOUDINARY_FOLDER }},NODE_ENV=production"
+          
+    - name: Get Cloud Run URL
+      run: |
+        gcloud run services describe $SERVICE_NAME \
+          --region $REGION \
+          --format 'value(status.url)' > url.txt
+      id: get-url
+      
+    - name: Echo Cloud Run URL
+      run: echo "Deployed to $(cat url.txt)"

@@ -41,3 +41,13 @@ yarn-error.log*
 next-env.d.ts
 /data
 /public/uploads
+service-account.json
+
+
+# GCP service account and sensitive files
+service-account.json
+*.key
+*.p12
+.env.local
+.env.production.local
+.env.development.local
