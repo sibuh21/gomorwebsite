@@ -54,7 +54,10 @@ jobs:
       
     - name: Build and Push Docker image
       run: |
-        docker build -t gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }} -f Dockerfile.cloudrun .
+        docker build \
+          --build-arg DATABASE_URL="${{ secrets.DATABASE_URL }}" \
+          -t gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }} \
+          -f Dockerfile.cloudrun .
         docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }}
         
     - name: Deploy to Cloud Run
