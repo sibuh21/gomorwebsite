@@ -14,7 +14,7 @@ try {
     throw new Error('DATABASE_URL not set');
   }
 } catch (error) {
-  console.warn('Prisma client initialization failed:', error.message);
+  console.warn('Prisma client initialization failed:', error instanceof Error ? error.message : 'Unknown error');
   // Export a dummy object that returns empty arrays
   prisma = {
     project: {

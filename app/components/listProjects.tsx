@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import axios from "axios";
 import CustomAlert from "./CustomAlert";
 
@@ -30,107 +29,206 @@ type ListProps = {
   onDelete?: (id: number) => void;
 };
 
-/* ── small icon placeholder (resembles the BIG.dk project icons) ── */
-function ProjectIcon() {
-  return (
-    <svg
-      width="40"
-      height="40"
-      viewBox="0 0 40 40"
-      fill="none"
-      style={{ margin: "0 auto 8px" }}
-    >
-      <rect
-        x="4"
-        y="4"
-        width="32"
-        height="32"
-        rx="4"
-        stroke="#1a1a1a"
-        strokeWidth="2"
-        fill="none"
-      />
-      <rect x="12" y="12" width="16" height="16" rx="2" fill="#1a1a1a" />
-    </svg>
-  );
-}
-
-/* ── Expanded horizontal scroll strip ── */
-function ExpandedProject({ project }: { project: Project }) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  /* auto-scroll hint: nudge right briefly */
+/* ── Project Card Component ── */
+function ProjectCard({ 
+  project, 
+  index, 
+  isSelected,
+  onClick
+}: { 
+  project: Project; 
+  index: number; 
+  isSelected: boolean;
+  onClick: () => void;
+}) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const [maxScroll, setMaxScroll] = useState(0);
+  
   useEffect(() => {
-    const el = scrollRef.current;
-    if (el) {
-      el.scrollTo({ left: 0, behavior: "instant" });
+    if (isSelected && scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const updateScrollMetrics = () => {
+        setScrollPosition(container.scrollLeft);
+        setMaxScroll(container.scrollWidth - container.clientWidth);
+      };
+      
+      updateScrollMetrics();
+      container.addEventListener('scroll', updateScrollMetrics);
+      window.addEventListener('resize', updateScrollMetrics);
+      
+      return () => {
+        container.removeEventListener('scroll', updateScrollMetrics);
+        window.removeEventListener('resize', updateScrollMetrics);
+      };
     }
-  }, []);
-
+  }, [isSelected]);
+  
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -400, behavior: 'smooth' });
+    }
+  };
+  
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 400, behavior: 'smooth' });
+    }
+  };
+  
+  const scrollProgress = maxScroll > 0 ? (scrollPosition / maxScroll) * 100 : 0;
+  const canScrollLeft = scrollPosition > 0;
+  const canScrollRight = scrollPosition < maxScroll;
+  
   return (
     <motion.div
-      initial={{ height: 0, opacity: 0 }}
-      animate={{ height: "70vh", opacity: 1 }}
-      exit={{ height: 0, opacity: 0 }}
-      transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-      style={{ overflow: "hidden", width: "100%" }}
+      className={`project-card ${isSelected ? 'project-card-selected' : ''}`}
+      onClick={(e) => {
+        // Prevent card click when clicking scroll controls
+        if (!(e.target as HTMLElement).closest('.scroll-hint')) {
+          onClick();
+        }
+      }}
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        duration: 0.6,
+        delay: index * 0.1,
+        ease: [0.215, 0.610, 0.355, 1.000]
+      }}
+      whileHover={{ scale: isSelected ? 1 : 1.02 }}
+      whileTap={{ scale: isSelected ? 1 : 0.98 }}
     >
-      <div
-        ref={scrollRef}
-        className="expanded-scroll-strip"
-      >
-        {/* First image (large) */}
-        {project.imagePaths.length > 0 && (
-          <div className="expanded-image-panel">
-            <Image
-              src={encodeURI(project.imagePaths[0])}
-              alt={project.title}
-              fill
-              sizes="60vw"
-              style={{ objectFit: "cover" }}
+      {/* Project title and location when not selected */}
+      {!isSelected ? (
+        <>
+          <div className="project-header">
+            <h3 className="project-title">{project.title}</h3>
+            <p className="project-location">{project.location.toUpperCase()}</p>
+          </div>
+          
+          {/* Project image */}
+          {project.imagePaths.length > 0 && (
+            <div className="project-image-container">
+              <Image
+                src={encodeURI(project.imagePaths[0])}
+                alt={project.title}
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                style={{ objectFit: "cover" }}
+                className="project-image"
+              />
+            </div>
+          )}
+        </>
+      ) : (
+        /* Horizontal scroll expanded view when selected */
+        <div className="project-expanded-horizontal" ref={scrollContainerRef}>
+          {/* Scroll hint indicators */}
+          <button 
+            className={`scroll-hint scroll-hint-left ${!canScrollLeft ? 'hidden' : ''}`}
+            onClick={scrollLeft}
+            aria-label="Scroll left"
+          >
+            ←
+          </button>
+          
+          <button 
+            className={`scroll-hint scroll-hint-right ${!canScrollRight ? 'hidden' : ''}`}
+            onClick={scrollRight}
+            aria-label="Scroll right"
+          >
+            →
+          </button>
+          
+          {/* Scroll progress indicator */}
+          <div className="horizontal-scroll-progress">
+            <div 
+              className="horizontal-scroll-progress-fill" 
+              style={{ width: `${scrollProgress}%` }}
             />
           </div>
-        )}
-
-        {/* Description panel */}
-        <div className="expanded-description-panel">
-          <p className="expanded-description-text">{project.description}</p>
+          
+          <div className="horizontal-scroll-content">
+            {/* Text content panel with two columns */}
+            <div className="horizontal-scroll-item horizontal-text-panel">
+              <h2>{project.title}</h2>
+              <p className="project-location">{project.location.toUpperCase()}</p>
+              
+              <div className="horizontal-content-container">
+                {/* Metadata column */}
+                <div className="horizontal-metadata-column">
+                  <div className="horizontal-metadata-grid">
+                    <div className="horizontal-metadata-item">
+                      <span className="horizontal-metadata-label">Client</span>
+                      <span className="horizontal-metadata-value">{project.client}</span>
+                    </div>
+                    <div className="horizontal-metadata-item">
+                      <span className="horizontal-metadata-label">Typology</span>
+                      <span className="horizontal-metadata-value">{project.typology}</span>
+                    </div>
+                    <div className="horizontal-metadata-item">
+                      <span className="horizontal-metadata-label">Year</span>
+                      <span className="horizontal-metadata-value">{project.year}</span>
+                    </div>
+                    <div className="horizontal-metadata-item">
+                      <span className="horizontal-metadata-label">Size</span>
+                      <span className="horizontal-metadata-value">{project.size}</span>
+                    </div>
+                    <div className="horizontal-metadata-item">
+                      <span className="horizontal-metadata-label">Category</span>
+                      <span className="horizontal-metadata-value">{project.category}</span>
+                    </div>
+                    <div className="horizontal-metadata-item">
+                      <span className="horizontal-metadata-label">Status</span>
+                      <span className="horizontal-metadata-value">{project.status}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Description column */}
+                <div className="horizontal-description-column">
+                  <h3 className="horizontal-description-title">Description</h3>
+                  <p className="horizontal-description-text">{project.description}</p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Image panels */}
+            {project.imagePaths.map((imagePath, idx) => (
+              <div key={idx} className="horizontal-scroll-item horizontal-media-item">
+                <Image
+                  src={encodeURI(imagePath)}
+                  alt={`${project.title} - Image ${idx + 1}`}
+                  fill
+                  sizes="100vw"
+                  style={{ objectFit: "cover" }}
+                  className="horizontal-media-image"
+                />
+              </div>
+            ))}
+            
+            {/* Video panels */}
+            {project.videoPaths.map((videoPath, idx) => (
+              <div key={`video-${idx}`} className="horizontal-scroll-item horizontal-media-item">
+                <video
+                  src={encodeURI(videoPath)}
+                  controls
+                  className="horizontal-media-video"
+                />
+              </div>
+            ))}
+          </div>
         </div>
-
-        {/* Remaining images */}
-        {project.imagePaths.slice(1).map((path, index) => (
-          <div key={`img-${index}`} className="expanded-image-panel">
-            <Image
-              src={encodeURI(path)}
-              alt={`${project.title} ${index + 2}`}
-              fill
-              sizes="60vw"
-              style={{ objectFit: "cover" }}
-            />
-          </div>
-        ))}
-
-        {/* Videos */}
-        {project.videoPaths.map((path, index) => (
-          <div key={`vid-${index}`} className="expanded-image-panel">
-            <video
-              src={encodeURI(path)}
-              controls
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-              }}
-            />
-          </div>
-        ))}
-      </div>
+      )}
     </motion.div>
   );
 }
 
+
+
 const ListProjects = ({ data, isAdmin = false, onDelete }: ListProps) => {
-  const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
   const [deleteAlert, setDeleteAlert] = useState<{
     isOpen: boolean;
     projectId: number | null;
@@ -142,19 +240,9 @@ const ListProjects = ({ data, isAdmin = false, onDelete }: ListProps) => {
     message: string;
   }>({ isOpen: false, message: "" });
 
-  const router = useRouter();
-
-  const handleToggle = (id: number) => {
-    setExpandedId((prev) => (prev === id ? null : id));
-  };
-
-  const initiateDelete = (e: React.MouseEvent, id: number, title: string) => {
-    e.stopPropagation();
-    setDeleteAlert({
-      isOpen: true,
-      projectId: id,
-      projectTitle: title,
-    });
+  const handleProjectClick = (project: Project) => {
+    // Toggle selection - if clicking the already selected project, deselect it
+    setSelectedProjectId(selectedProjectId === project.id ? null : project.id);
   };
 
   const confirmDelete = async () => {
@@ -175,11 +263,6 @@ const ListProjects = ({ data, isAdmin = false, onDelete }: ListProps) => {
     }
   };
 
-  const handleEdit = (e: React.MouseEvent, id: number) => {
-    e.stopPropagation();
-    router.push(`/upload?edit=${id}`);
-  };
-
   return (
     <div className="projects-page">
       {/* Admin: New Project button */}
@@ -191,109 +274,17 @@ const ListProjects = ({ data, isAdmin = false, onDelete }: ListProps) => {
         </div>
       )}
 
-      <div className="project-list">
-        {data.map((project, index) => {
-          const isExpanded = expandedId === project.id;
-
-          return (
-            <div key={project.id} className="project-row-wrapper">
-              {/* Project Row */}
-              <motion.div
-                className={`project-row ${isExpanded ? "expanded" : ""}`}
-                onClick={() => handleToggle(project.id)}
-                initial={{ opacity: 0, y: 60 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.6,
-                  ease: [0.25, 0.46, 0.45, 0.94],
-                  delay: index < 5 ? index * 0.1 : 0,
-                }}
-                viewport={{ once: false, amount: 0.15 }}
-              >
-                {/* Left side: icon + title + location */}
-                <div className="project-info-col">
-                  <ProjectIcon />
-                  <h3 className="project-title">{project.title}</h3>
-                  <p className="project-location">
-                    {project.location.toUpperCase()}
-                  </p>
-
-                  <AnimatePresence>
-                    {isExpanded && (
-                      <motion.div
-                        className="project-extra-details"
-                        initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                        animate={{ opacity: 1, height: "auto", marginTop: 24 }}
-                        exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                      >
-                        <p><strong>Year</strong> {project.year}</p>
-                        <p><strong>Client</strong> {project.client}</p>
-                        <p><strong>Typology</strong> {project.typology}</p>
-                        <p><strong>Size</strong> {project.size}</p>
-                        <p><strong>Status</strong> {project.status}</p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-                {/* Right side: project image OR expanded scroll strip */}
-                <div className="project-content-col">
-                  <AnimatePresence mode="wait">
-                    {!isExpanded ? (
-                      <motion.div
-                        key="image"
-                        className="project-image-col"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                      >
-                        {project.imagePaths.length > 0 && (
-                          <Image
-                            src={encodeURI(project.imagePaths[0])}
-                            alt={project.title}
-                            fill
-                            sizes="(max-width: 768px) 100vw, 60vw"
-                            style={{ objectFit: "cover" }}
-                          />
-                        )}
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="expanded"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        style={{ height: "100%", width: "100%" }}
-                      >
-                        <ExpandedProject project={project} />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </motion.div>
-
-              {/* Admin action buttons placed to the right (overlay style inside row wrapper) */}
-              {isAdmin && (
-                <div className="admin-actions">
-                  <button
-                    className="admin-btn admin-btn-edit"
-                    onClick={(e) => handleEdit(e, project.id)}
-                    title="Edit project"
-                  >
-                    ✎ Edit
-                  </button>
-                  <button
-                    className="admin-btn admin-btn-delete"
-                    onClick={(e) => initiateDelete(e, project.id, project.title)}
-                    title="Delete project"
-                  >
-                    ✕ Delete
-                  </button>
-                </div>
-              )}
-            </div>
-          );
-        })}
+      {/* Project List */}
+      <div className="projects-container">
+        {data.map((project, index) => (
+          <ProjectCard
+            key={project.id}
+            project={project}
+            index={index}
+            isSelected={selectedProjectId === project.id}
+            onClick={() => handleProjectClick(project)}
+          />
+        ))}
       </div>
 
       {/* Delete Confirmation Alert Modal */}
