@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -11,19 +5,29 @@ datasource db {
 
 model Project {
   id          Int      @id @default(autoincrement())
-  title       String
   description String
-  client      String
-  location    String
-  year        String
-  size        String
-  typology    Typology @default(Culture)
-  category    Category @default(ARCHITECTURAL)
   status      Status   @default(COMPLETED)
-  imagePaths  Json
-  videoPaths  Json
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  imagePaths  String[]
+  videoPaths  String[]
+  category    Category @default(ARCHITECTURAL)
+  client      String   @db.VarChar(100)
+  location    String   @db.VarChar(255)
+  size        String   @db.VarChar(255)
+  title       String   @db.VarChar(255)
+  typology    String   @db.VarChar(255)
+  year        String   @db.VarChar(4)
+}
+
+model User {
+  id         Int    @id @default(autoincrement())
+  first_name String @db.VarChar(255)
+  last_name  String @db.VarChar(255)
+  password   String @db.VarChar(255)
+  email      String @unique @db.VarChar(255)
+  phone      String @db.VarChar(255)
+  role       Role   @default(USER)
 }
 
 enum Status {
@@ -37,30 +41,6 @@ enum Category {
   ARCHITECTURAL
   STRUCTURAL
   INTERIOR
-}
-
-enum Typology {
-  Culture
-  Education
-  Work
-  Hospitality
-  Residential
-  Infrastructure
-  Space
-  Sports
-  Health
-  Religion
-  Exhibition
-}
-
-model User {
-  id Int @id @default(autoincrement())
-  first_name String
-  last_name String
-  password String
-  email String @unique
-  phone String
-  role Role @default(USER) 
 }
 
 enum Role {
