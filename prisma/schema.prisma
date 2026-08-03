@@ -23,8 +23,8 @@ model Project {
   typology    Typology @default(Culture)
   category    Category @default(ARCHITECTURAL)
   status      Status   @default(COMPLETED)
-  imagePaths  String[]
-  videoPaths  String[]
+  imagePaths  String[] @default([])
+  videoPaths  String[] 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
