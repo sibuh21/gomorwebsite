@@ -314,20 +314,28 @@ const ListProjects = ({ data, isAdmin = false, onDelete }: ListProps) => {
       )}
 
       {/* Project List */}
-      <div className="projects-container">
-        {data.map((project, index) => (
-          <ProjectCard
-            key={project.id}
-            project={project}
-            index={index}
-            isSelected={selectedProjectId === project.id}
-            onClick={() => handleProjectClick(project)}
-            isAdmin={isAdmin}
-            onDelete={(id) => handleDeleteClick(id, data.find((p) => p.id === id)?.title || "")}
-            onEdit={handleEditClick}
-          />
-        ))}
-      </div>
+      {data.length === 0 ? (
+        <div className="projects-container">
+          <div className="empty-state" style={{ padding: "3rem 1rem", textAlign: "center" }}>
+            <h2>No projects done in this category</h2>
+          </div>
+        </div>
+      ) : (
+        <div className="projects-container">
+          {data.map((project, index) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              index={index}
+              isSelected={selectedProjectId === project.id}
+              onClick={() => handleProjectClick(project)}
+              isAdmin={isAdmin}
+              onDelete={(id) => handleDeleteClick(id, data.find((p) => p.id === id)?.title || "")}
+              onEdit={handleEditClick}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Delete Confirmation Alert Modal */}
       <CustomAlert

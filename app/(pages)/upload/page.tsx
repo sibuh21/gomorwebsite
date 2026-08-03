@@ -6,12 +6,28 @@ import NavBar from "@/app/components/NavBar";
 import { useSearchParams, useRouter } from "next/navigation";
 import CustomAlert from "@/app/components/CustomAlert";
 
+export const TYPOLOGY_VALUES = [
+  "Culture",
+  "Education",
+  "Work",
+  "Hospitality",
+  "Residential",
+  "Infrastructure",
+  "Space",
+  "Sports",
+  "Health",
+  "Religion",
+  "Exhibition",
+] as const;
+
 const categories = [
   { label: "Architecture", category: "ARCHITECTURAL" },
   { label: "Interior", category: "INTERIOR" },
   { label: "Landscape", category: "LANDSCAPE" },
   { label: "Structural", category: "STRUCTURAL" },
 ];
+
+const MAX_TOTAL_MEDIA_ITEMS = 20;
 
 function getCloudinaryConfig() {
   const cloudName =
@@ -173,6 +189,17 @@ function UploadForm() {
     setLoading(true);
     setUploadProgress(0);
     setUploadMessage("");
+
+    const totalSelectedMedia = files.length + videos.length;
+    if (totalSelectedMedia > MAX_TOTAL_MEDIA_ITEMS) {
+      addToast({
+        title: "Upload limit",
+        description: `You can upload up to ${MAX_TOTAL_MEDIA_ITEMS} images and videos in total.`,
+        color: "danger",
+      });
+      setLoading(false);
+      return;
+    }
 
     try {
       const uploadedUrls = await uploadFilesSequentially();
@@ -380,18 +407,30 @@ function UploadForm() {
             </div>
             <div>
               <label style={labelStyle}>Typology</label>
-              <input
-                type="text"
-                placeholder="e.g., Residential"
-                style={inputStyle}
+              <select
+                style={{
+                  ...inputStyle,
+                  appearance: "none",
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`,
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "right 16px center",
+                  paddingRight: "40px",
+                }}
                 value={formData.typology}
                 onChange={(e) =>
                   setFormData({ ...formData, typology: e.target.value })
                 }
-                onFocus={(e) => (e.target.style.borderColor = "#1a1a1a")}
-                onBlur={(e) => (e.target.style.borderColor = "#e5e5e5")}
                 required
-              />
+              >
+                <option value="" disabled hidden>
+                  Select typology
+                </option>
+                {TYPOLOGY_VALUES.map((typology) => (
+                  <option key={typology} value={typology}>
+                    {typology}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -448,7 +487,11 @@ function UploadForm() {
                 padding: "10px 16px",
                 cursor: "pointer",
               }}
-              onChange={(e) => setFiles(Array.from(e.target.files || []))}
+              onChange={(e) => {
+                const selectedFiles = Array.from(e.target.files || []);
+                const nextFiles = selectedFiles.slice(0, MAX_TOTAL_MEDIA_ITEMS - videos.length);
+                setFiles(nextFiles);
+              }}
               required={!editId}
             />
             {files.length > 0 ? (
@@ -485,7 +528,11 @@ function UploadForm() {
                 padding: "10px 16px",
                 cursor: "pointer",
               }}
-              onChange={(e) => setVideos(Array.from(e.target.files || []))}
+              onChange={(e) => {
+                const selectedVideos = Array.from(e.target.files || []);
+                const nextVideos = selectedVideos.slice(0, MAX_TOTAL_MEDIA_ITEMS - files.length);
+                setVideos(nextVideos);
+              }}
             />
             {videos.length > 0 && (
               <p

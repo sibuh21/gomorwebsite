@@ -7,6 +7,22 @@ import { useSearchParams } from "next/navigation";
 import { Project } from "@prisma/client";
 import axios from "axios";
 
+export const TYPOLOGY_VALUES = [
+  "Culture",
+  "Education",
+  "Work",
+  "Hospitality",
+  "Residential",
+  "Infrastructure",
+  "Space",
+  "Sports",
+  "Health",
+  "Religion",
+  "Exhibition",
+] as const;
+
+export type TypologyValue = (typeof TYPOLOGY_VALUES)[number];
+
 export default function App() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -14,12 +30,18 @@ export default function App() {
   const [isAdminChecked, setIsAdminChecked] = useState(false);
   const searchParams = useSearchParams();
   const category = searchParams.get("category") || "";
+  const typology = searchParams.get("typology") || "";
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("/api/projects/list");
+        const response = await axios.get("/api/projects/list", {
+          params: {
+            category: category || undefined,
+            typology: typology || undefined,
+          },
+        });
         setProjects(response.data);
       } catch (error) {
         console.error("Error fetching projects:", error);
@@ -28,6 +50,10 @@ export default function App() {
       }
     };
 
+    fetchProjects();
+  }, [category, typology]);
+
+  useEffect(() => {
     const checkAdminStatus = async () => {
       try {
         const response = await axios.get("/api/users/isLoggedIn");
@@ -41,13 +67,23 @@ export default function App() {
       }
     };
 
-    fetchProjects();
     checkAdminStatus();
   }, []);
 
   const filteredProjects = projects.filter((project) => {
-    if (category === "" || category.toUpperCase() === "ALL") return true;
-    return project.category === category;
+    const normalizedCategory = category?.trim().toUpperCase() || "";
+    const normalizedTypology = typology?.trim().toLowerCase() || "";
+
+    const matchesCategory =
+      normalizedCategory === "" || normalizedCategory === "ALL"
+        ? true
+        : project.category?.toString().toUpperCase() === normalizedCategory;
+
+    const matchesTypology =
+      !normalizedTypology ||
+      project.typology?.toString().trim().toLowerCase() === normalizedTypology;
+
+    return matchesCategory && matchesTypology;
   });
 
   // Main category buttons
@@ -60,10 +96,7 @@ export default function App() {
     { id: "PRODUCTS", label: "Products" },
   ];
 
-  const subcategories = [
-    "Culture", "Education", "Work", "Hospitality", 
-    "Residential", "Infrastructure", "Space", "Sports", "Health"
-  ];
+  const typologies = TYPOLOGY_VALUES;
 
   return (
     <>
@@ -88,11 +121,18 @@ export default function App() {
         </div>
         
         <div className="category-row-sub">
-          {subcategories.map(sub => (
-            <a key={sub} href={`/?category=${category}&sub=${sub.toLowerCase()}`} className="cat-btn-sub">
-              {sub}
-            </a>
-          ))}
+          {typologies.map((sub) => {
+            const isActive = typology.toLowerCase() === sub.toLowerCase();
+            return (
+              <a
+                key={sub}
+                href={`/?typology=${sub.toLowerCase()}`}
+                className={`cat-btn-sub ${isActive ? "active" : ""}`}
+              >
+                {sub}
+              </a>
+            );
+          })}
         </div>
       </div>
 

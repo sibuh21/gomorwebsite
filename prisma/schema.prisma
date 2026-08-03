@@ -8,24 +8,19 @@ generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
 model Project {
   id          Int      @id @default(autoincrement())
-  title       String   @db.VarChar(255) 
-  description String   @db.Text
-  client      String   @db.VarChar(100) 
-  location    String   @db.VarChar(255) 
-  year        String   @db.VarChar(4)   
-  size        String   @db.VarChar(255) 
-  typology    String   @db.VarChar(255) 
+  title       String
+  description String
+  client      String
+  location    String
+  year        String
+  size        String
+  typology    Typology @default(Culture)
   category    Category @default(ARCHITECTURAL)
   status      Status   @default(COMPLETED)
-  imagePaths  String[]
-  videoPaths  String[]
+  imagePaths  Json
+  videoPaths  Json
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -43,13 +38,27 @@ enum Category {
   INTERIOR
 }
 
+enum Typology {
+  Culture
+  Education
+  Work
+  Hospitality
+  Residential
+  Infrastructure
+  Space
+  Sports
+  Health
+  Religion
+  Exhibition
+}
+
 model User {
   id Int @id @default(autoincrement())
-  first_name String @db.VarChar(255)
-  last_name String @db.VarChar(255)
-  password String @db.VarChar(255)
-  email String @db.VarChar(255) @unique
-  phone String @db.VarChar(255)
+  first_name String
+  last_name String
+  password String
+  email String @unique
+  phone String
   role Role @default(USER) 
 }
 
