@@ -34,12 +34,18 @@ function ProjectCard({
   project, 
   index, 
   isSelected,
-  onClick
+  onClick,
+  isAdmin = false,
+  onDelete,
+  onEdit
 }: { 
   project: Project; 
   index: number; 
   isSelected: boolean;
   onClick: () => void;
+  isAdmin?: boolean;
+  onDelete?: (id: number) => void;
+  onEdit?: (id: number) => void;
 }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -99,6 +105,31 @@ function ProjectCard({
       whileHover={{ scale: isSelected ? 1 : 1.02 }}
       whileTap={{ scale: isSelected ? 1 : 0.98 }}
     >
+      {isAdmin && (
+        <div className="admin-actions">
+          <button
+            type="button"
+            className="admin-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit?.(project.id);
+            }}
+          >
+            Edit
+          </button>
+          <button
+            type="button"
+            className="admin-btn admin-btn-delete"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete?.(project.id);
+            }}
+          >
+            Delete
+          </button>
+        </div>
+      )}
+
       {/* Project title and location when not selected */}
       {!isSelected ? (
         <>
@@ -263,6 +294,14 @@ const ListProjects = ({ data, isAdmin = false, onDelete }: ListProps) => {
     }
   };
 
+  const handleDeleteClick = (projectId: number, projectTitle: string) => {
+    setDeleteAlert({ isOpen: true, projectId, projectTitle });
+  };
+
+  const handleEditClick = (projectId: number) => {
+    window.location.href = `/upload?edit=${projectId}`;
+  };
+
   return (
     <div className="projects-page">
       {/* Admin: New Project button */}
@@ -283,6 +322,9 @@ const ListProjects = ({ data, isAdmin = false, onDelete }: ListProps) => {
             index={index}
             isSelected={selectedProjectId === project.id}
             onClick={() => handleProjectClick(project)}
+            isAdmin={isAdmin}
+            onDelete={(id) => handleDeleteClick(id, data.find((p) => p.id === id)?.title || "")}
+            onEdit={handleEditClick}
           />
         ))}
       </div>

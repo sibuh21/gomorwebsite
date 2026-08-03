@@ -13,6 +13,22 @@ const categories = [
   { label: "Structural", category: "STRUCTURAL" },
 ];
 
+function getCloudinaryConfig() {
+  const cloudName =
+    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "drpc1o6de";
+  const uploadPreset =
+    process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "gomor_assets";
+  const folder = process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER || "gomor";
+
+  if (!cloudName || !uploadPreset) {
+    throw new Error(
+      "Cloudinary upload is not configured correctly. Please verify the public environment variables."
+    );
+  }
+
+  return { cloudName, uploadPreset, folder };
+}
+
 export default function UploadPage() {
   return (
     <Suspense fallback={<div>Loading form...</div>}>
@@ -40,6 +56,8 @@ function UploadForm() {
   const [files, setFiles] = useState<File[]>([]);
   const [videos, setVideos] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadMessage, setUploadMessage] = useState("");
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const [existingVideos, setExistingVideos] = useState<string[]>([]);
   const [successAlert, setSuccessAlert] = useState<{
@@ -80,43 +98,86 @@ function UploadForm() {
     }
   }, [editId]);
 
-  const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!;
-  const CLOUDINARY_UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!;
-  const CLOUDINARY_FOLDER = process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER!;
-
   const uploadToCloudinary = async (
     file: File,
     resourceType: "image" | "video"
   ): Promise<string> => {
+    const { cloudName, uploadPreset, folder } = getCloudinaryConfig();
     const data = new FormData();
     data.append("file", file);
-    data.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-    data.append("folder", CLOUDINARY_FOLDER);
+    data.append("upload_preset", uploadPreset);
+    data.append("folder", folder);
 
-    const res = await axios.post(
-      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resourceType}/upload`,
-      data
-    );
-    return res.data.secure_url;
+    try {
+      const response = await axios.post(
+        `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`,
+        data
+      );
+
+      return response.data.secure_url;
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Cloudinary upload failed.";
+      throw new Error(`Cloudinary upload failed: ${message}`);
+    }
+  };
+
+  const uploadFilesSequentially = async () => {
+    const uploadedImages: string[] = [];
+    const uploadedVideos: string[] = [];
+    const totalFiles = Math.max(files.length + videos.length, 1);
+    let completed = 0;
+
+    for (const file of files) {
+      setUploadMessage(
+        `Uploading image ${uploadedImages.length + 1} of ${files.length}...`
+      );
+      const url = await uploadWithRetry(file, "image", 2);
+      uploadedImages.push(url);
+      completed += 1;
+      setUploadProgress(Math.round((completed / totalFiles) * 100));
+    }
+
+    for (const video of videos) {
+      setUploadMessage(
+        `Uploading video ${uploadedVideos.length + 1} of ${videos.length}...`
+      );
+      const url = await uploadWithRetry(video, "video", 2);
+      uploadedVideos.push(url);
+      completed += 1;
+      setUploadProgress(Math.round((completed / totalFiles) * 100));
+    }
+
+    return { imageUrls: uploadedImages, videoUrls: uploadedVideos };
+  };
+
+  const uploadWithRetry = async (
+    file: File,
+    resourceType: "image" | "video",
+    retries: number
+  ): Promise<string> => {
+    try {
+      return await uploadToCloudinary(file, resourceType);
+    } catch (error) {
+      if (retries > 0) {
+        return uploadWithRetry(file, resourceType, retries - 1);
+      }
+      throw error;
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setUploadProgress(0);
+    setUploadMessage("");
 
     try {
-      // Step 1: Upload images and videos directly to Cloudinary from the browser
-      const imageUploadPromises = files.map((file) =>
-        uploadToCloudinary(file, "image")
-      );
-      const videoUploadPromises = videos.map((video) =>
-        uploadToCloudinary(video, "video")
-      );
-
-      const [imageUrls, videoUrls] = await Promise.all([
-        Promise.all(imageUploadPromises),
-        Promise.all(videoUploadPromises),
-      ]);
+      const uploadedUrls = await uploadFilesSequentially();
+      const imageUrls = uploadedUrls.imageUrls;
+      const videoUrls = uploadedUrls.videoUrls;
 
       // Step 2: Send only project metadata + Cloudinary URLs to backend
       const projectPayload = {
@@ -148,6 +209,8 @@ function UploadForm() {
         throw new Error(editId ? "Update failed" : "Project creation failed");
       }
       
+      setUploadProgress(100);
+      setUploadMessage("Upload complete.");
       setSuccessAlert({
         isOpen: true,
         message: editId 
@@ -156,9 +219,11 @@ function UploadForm() {
       });
     } catch (error) {
       console.error(error);
+      const message =
+        error instanceof Error ? error.message : "Upload failed";
       addToast({
         title: editId ? "Update" : "Upload",
-        description: editId ? "Update failed" : "Upload failed",
+        description: message,
         color: "danger",
       });
     } finally {
@@ -434,6 +499,26 @@ function UploadForm() {
               </p>
             )}
           </div>
+
+          {loading && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <div style={{ width: "100%", height: "8px", background: "#f0f0f0", overflow: "hidden" }}>
+                <div
+                  style={{
+                    width: `${uploadProgress}%`,
+                    height: "100%",
+                    background: "#1a1a1a",
+                    transition: "width 0.2s ease",
+                  }}
+                />
+              </div>
+              {uploadMessage ? (
+                <p style={{ fontSize: "12px", color: "#666", margin: 0 }}>
+                  {uploadMessage}
+                </p>
+              ) : null}
+            </div>
+          )}
 
           <button
             type="submit"

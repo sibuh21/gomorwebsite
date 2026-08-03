@@ -7,8 +7,8 @@ const Footer = () => {
         {/* Email */}
         <div>
           <p className="footer-section-title">Email</p>
-          <Link href="mailto:info@gomor.com" className="footer-link">
-            info@gomor.com
+          <Link href="mailto:info@gomorarchitecture.com" className="footer-link">
+            info@gomorarchitecture.com
           </Link>
           <Link href="mailto:press@gomor.com" className="footer-link">
             press@gomor.com
@@ -24,11 +24,11 @@ const Footer = () => {
           <p className="footer-link" style={{ cursor: "default" }}>
             Addis Ababa, Ethiopia
           </p>
-          <Link href="tel:+251912131415" className="footer-link">
+          <Link href="tel:+251913324275" className="footer-link">
             +251 912 131 415
           </Link>
-          <Link href="mailto:addis@gomor.com" className="footer-link">
-            addis@gomor.com
+          <Link href="mailto:addis@gomorarchitecture.com" className="footer-link">
+            addis@gomorarchitecture.com
           </Link>
         </div>
 

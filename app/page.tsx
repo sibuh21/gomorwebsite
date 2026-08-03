@@ -11,6 +11,7 @@ export default function App() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdminChecked, setIsAdminChecked] = useState(false);
   const searchParams = useSearchParams();
   const category = searchParams.get("category") || "";
 
@@ -33,8 +34,10 @@ export default function App() {
         if (response.data?.user?.role === "ADMIN") {
           setIsAdmin(true);
         }
+        setIsAdminChecked(true);
       } catch (error) {
-        // Not logged in or not admin, ignore
+        setIsAdmin(false);
+        setIsAdminChecked(true);
       }
     };
 
@@ -105,7 +108,7 @@ export default function App() {
       ) : (
         <ListProjects 
           data={filteredProjects} 
-          isAdmin={isAdmin} 
+          isAdmin={isAdminChecked && isAdmin} 
           onDelete={(id) => setProjects(prev => prev.filter(p => p.id !== id))}
         />
       )}

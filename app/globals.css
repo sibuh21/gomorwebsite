@@ -1037,6 +1037,15 @@ body {
   z-index: 10;
   display: flex;
   gap: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.project-card:hover .admin-actions,
+.project-card-selected .admin-actions {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .admin-btn {

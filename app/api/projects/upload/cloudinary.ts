@@ -2,7 +2,7 @@ import { v2 as cloudinary } from 'cloudinary';
 
 // Configure Cloudinary (make sure to do this once in your application)
 cloudinary.config({
-  cloud_name: 'drpc1o6de',
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'drpc1o6de',
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
   secure: true
