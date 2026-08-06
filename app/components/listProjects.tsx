@@ -50,6 +50,19 @@ function ProjectCard({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [maxScroll, setMaxScroll] = useState(0);
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+  
+  const allMedia = [
+    ...(project.imagePaths || []).map(p => ({ type: 'image', src: p })),
+    ...(project.videoPaths || []).map(p => ({ type: 'video', src: p }))
+  ];
+
+  const handleMediaTap = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (allMedia.length > 0) {
+      setCurrentMediaIndex((prev) => (prev + 1) % allMedia.length);
+    }
+  };
   
   useEffect(() => {
     if (isSelected && scrollContainerRef.current) {
@@ -153,104 +166,172 @@ function ProjectCard({
           )}
         </>
       ) : (
-        /* Horizontal scroll expanded view when selected */
-        <div className="project-expanded-horizontal" ref={scrollContainerRef}>
-          {/* Scroll hint indicators */}
-          <button 
-            className={`scroll-hint scroll-hint-left ${!canScrollLeft ? 'hidden' : ''}`}
-            onClick={scrollLeft}
-            aria-label="Scroll left"
-          >
-            ←
-          </button>
-          
-          <button 
-            className={`scroll-hint scroll-hint-right ${!canScrollRight ? 'hidden' : ''}`}
-            onClick={scrollRight}
-            aria-label="Scroll right"
-          >
-            →
-          </button>
-          
-          {/* Scroll progress indicator */}
-          <div className="horizontal-scroll-progress">
-            <div 
-              className="horizontal-scroll-progress-fill" 
-              style={{ width: `${scrollProgress}%` }}
-            />
-          </div>
-          
-          <div className="horizontal-scroll-content">
-            {/* Text content panel with two columns */}
-            <div className="horizontal-scroll-item horizontal-text-panel">
-              <h2>{project.title}</h2>
-              <p className="project-location">{project.location.toUpperCase()}</p>
-              
-              <div className="horizontal-content-container">
-                {/* Metadata column */}
-                <div className="horizontal-metadata-column">
-                  <div className="horizontal-metadata-grid">
-                    <div className="horizontal-metadata-item">
-                      <span className="horizontal-metadata-label">Client</span>
-                      <span className="horizontal-metadata-value">{project.client}</span>
-                    </div>
-                    <div className="horizontal-metadata-item">
-                      <span className="horizontal-metadata-label">Typology</span>
-                      <span className="horizontal-metadata-value">{project.typology}</span>
-                    </div>
-                    <div className="horizontal-metadata-item">
-                      <span className="horizontal-metadata-label">Year</span>
-                      <span className="horizontal-metadata-value">{project.year}</span>
-                    </div>
-                    <div className="horizontal-metadata-item">
-                      <span className="horizontal-metadata-label">Size</span>
-                      <span className="horizontal-metadata-value">{project.size}</span>
-                    </div>
-                    <div className="horizontal-metadata-item">
-                      <span className="horizontal-metadata-label">Category</span>
-                      <span className="horizontal-metadata-value">{project.category}</span>
-                    </div>
-                    <div className="horizontal-metadata-item">
-                      <span className="horizontal-metadata-label">Status</span>
-                      <span className="horizontal-metadata-value">{project.status}</span>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Description column */}
-                <div className="horizontal-description-column">
-                  <h3 className="horizontal-description-title">Description</h3>
-                  <p className="horizontal-description-text">{project.description}</p>
-                </div>
-              </div>
+        /* Expanded view when selected */
+        <>
+          {/* Desktop Horizontal Scroll */}
+          <div className="project-expanded-horizontal desktop-only" ref={scrollContainerRef}>
+            {/* Scroll hint indicators */}
+            <button 
+              className={`scroll-hint scroll-hint-left ${!canScrollLeft ? 'hidden' : ''}`}
+              onClick={scrollLeft}
+              aria-label="Scroll left"
+            >
+              ←
+            </button>
+            
+            <button 
+              className={`scroll-hint scroll-hint-right ${!canScrollRight ? 'hidden' : ''}`}
+              onClick={scrollRight}
+              aria-label="Scroll right"
+            >
+              →
+            </button>
+            
+            {/* Scroll progress indicator */}
+            <div className="horizontal-scroll-progress">
+              <div 
+                className="horizontal-scroll-progress-fill" 
+                style={{ width: `${scrollProgress}%` }}
+              />
             </div>
             
-            {/* Image panels */}
-            {project.imagePaths.map((imagePath, idx) => (
-              <div key={idx} className="horizontal-scroll-item horizontal-media-item">
-                <Image
-                  src={encodeURI(imagePath)}
-                  alt={`${project.title} - Image ${idx + 1}`}
-                  fill
-                  sizes="100vw"
-                  style={{ objectFit: "cover" }}
-                  className="horizontal-media-image"
-                />
+            <div className="horizontal-scroll-content">
+              {/* Text content panel with two columns */}
+              <div className="horizontal-scroll-item horizontal-text-panel">
+                <h2>{project.title}</h2>
+                <p className="project-location">{project.location.toUpperCase()}</p>
+                
+                <div className="horizontal-content-container">
+                  {/* Metadata column */}
+                  <div className="horizontal-metadata-column">
+                    <div className="horizontal-metadata-grid">
+                      <div className="horizontal-metadata-item">
+                        <span className="horizontal-metadata-label">Client</span>
+                        <span className="horizontal-metadata-value">{project.client}</span>
+                      </div>
+                      <div className="horizontal-metadata-item">
+                        <span className="horizontal-metadata-label">Typology</span>
+                        <span className="horizontal-metadata-value">{project.typology}</span>
+                      </div>
+                      <div className="horizontal-metadata-item">
+                        <span className="horizontal-metadata-label">Year</span>
+                        <span className="horizontal-metadata-value">{project.year}</span>
+                      </div>
+                      <div className="horizontal-metadata-item">
+                        <span className="horizontal-metadata-label">Size</span>
+                        <span className="horizontal-metadata-value">{project.size}</span>
+                      </div>
+                      <div className="horizontal-metadata-item">
+                        <span className="horizontal-metadata-label">Category</span>
+                        <span className="horizontal-metadata-value">{project.category}</span>
+                      </div>
+                      <div className="horizontal-metadata-item">
+                        <span className="horizontal-metadata-label">Status</span>
+                        <span className="horizontal-metadata-value">{project.status}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Description column */}
+                  <div className="horizontal-description-column">
+                    <h3 className="horizontal-description-title">Description</h3>
+                    <p className="horizontal-description-text">{project.description}</p>
+                  </div>
+                </div>
               </div>
-            ))}
-            
-            {/* Video panels */}
-            {project.videoPaths.map((videoPath, idx) => (
-              <div key={`video-${idx}`} className="horizontal-scroll-item horizontal-media-item">
-                <video
-                  src={encodeURI(videoPath)}
-                  controls
-                  className="horizontal-media-video"
-                />
-              </div>
-            ))}
+              
+              {/* Image panels */}
+              {project.imagePaths.map((imagePath, idx) => (
+                <div key={idx} className="horizontal-scroll-item horizontal-media-item">
+                  <Image
+                    src={encodeURI(imagePath)}
+                    alt={`${project.title} - Image ${idx + 1}`}
+                    fill
+                    sizes="100vw"
+                    style={{ objectFit: "cover" }}
+                    className="horizontal-media-image"
+                  />
+                </div>
+              ))}
+              
+              {/* Video panels */}
+              {project.videoPaths.map((videoPath, idx) => (
+                <div key={`video-${idx}`} className="horizontal-scroll-item horizontal-media-item">
+                  <video
+                    src={encodeURI(videoPath)}
+                    controls
+                    className="horizontal-media-video"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+
+          {/* Mobile Vertical Layout */}
+          <div className="project-expanded-mobile mobile-only">
+             <div className="mobile-expanded-content">
+               <h2>{project.title}</h2>
+               <p className="project-location">{project.location.toUpperCase()}</p>
+               
+               <div className="mobile-metadata">
+                  <div className="horizontal-metadata-item">
+                    <span className="horizontal-metadata-label">Client</span>
+                    <span className="horizontal-metadata-value">{project.client}</span>
+                  </div>
+                  <div className="horizontal-metadata-item">
+                    <span className="horizontal-metadata-label">Typology</span>
+                    <span className="horizontal-metadata-value">{project.typology}</span>
+                  </div>
+                  <div className="horizontal-metadata-item">
+                    <span className="horizontal-metadata-label">Year</span>
+                    <span className="horizontal-metadata-value">{project.year}</span>
+                  </div>
+                  <div className="horizontal-metadata-item">
+                    <span className="horizontal-metadata-label">Size</span>
+                    <span className="horizontal-metadata-value">{project.size}</span>
+                  </div>
+                  <div className="horizontal-metadata-item">
+                    <span className="horizontal-metadata-label">Category</span>
+                    <span className="horizontal-metadata-value">{project.category}</span>
+                  </div>
+                  <div className="horizontal-metadata-item">
+                    <span className="horizontal-metadata-label">Status</span>
+                    <span className="horizontal-metadata-value">{project.status}</span>
+                  </div>
+               </div>
+               
+               <div className="mobile-description">
+                 <h3 className="horizontal-description-title">Description</h3>
+                 <p>{project.description}</p>
+               </div>
+               
+               {allMedia.length > 0 && (
+                 <div className="mobile-media-carousel" onClick={handleMediaTap}>
+                   {allMedia[currentMediaIndex].type === 'image' ? (
+                     <Image
+                       src={encodeURI(allMedia[currentMediaIndex].src)}
+                       alt={`${project.title} - Media`}
+                       fill
+                       sizes="(max-width: 768px) 100vw, 50vw"
+                       style={{ objectFit: "cover" }}
+                     />
+                   ) : (
+                     <video
+                       src={encodeURI(allMedia[currentMediaIndex].src)}
+                       controls
+                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                     />
+                   )}
+                   {allMedia.length > 1 && (
+                     <div className="carousel-indicator">
+                       {currentMediaIndex + 1} / {allMedia.length}
+                     </div>
+                   )}
+                 </div>
+               )}
+             </div>
+          </div>
+        </>
       )}
     </motion.div>
   );
@@ -317,7 +398,7 @@ const ListProjects = ({ data, isAdmin = false, onDelete }: ListProps) => {
       {data.length === 0 ? (
         <div className="projects-container">
           <div className="empty-state" style={{ padding: "3rem 1rem", textAlign: "center" }}>
-            <h2>No projects done in this category</h2>
+            <h2>No projects done in this area</h2>
           </div>
         </div>
       ) : (
