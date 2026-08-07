@@ -151,17 +151,27 @@ function ProjectCard({
             <p className="project-location">{project.location.toUpperCase()}</p>
           </div>
           
-          {/* Project image */}
-          {project.imagePaths.length > 0 && (
+          {/* Project media */}
+          {allMedia.length > 0 && (
             <div className="project-image-container">
-              <Image
-                src={encodeURI(project.imagePaths[0])}
-                alt={project.title}
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                style={{ objectFit: "cover" }}
-                className="project-image"
-              />
+              {allMedia[0].type === 'image' ? (
+                <img
+                  src={encodeURI(allMedia[0].src)}
+                  alt={project.title}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  className="project-image"
+                />
+              ) : (
+                <video
+                  src={encodeURI(allMedia[0].src)}
+                  className="project-image"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  muted
+                  playsInline
+                  loop
+                  autoPlay
+                />
+              )}
             </div>
           )}
         </>
@@ -243,12 +253,10 @@ function ProjectCard({
               {/* Image panels */}
               {project.imagePaths.map((imagePath, idx) => (
                 <div key={idx} className="horizontal-scroll-item horizontal-media-item">
-                  <Image
+                  <img
                     src={encodeURI(imagePath)}
                     alt={`${project.title} - Image ${idx + 1}`}
-                    fill
-                    sizes="100vw"
-                    style={{ objectFit: "cover" }}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     className="horizontal-media-image"
                   />
                 </div>
@@ -308,13 +316,11 @@ function ProjectCard({
                {allMedia.length > 0 && (
                  <div className="mobile-media-carousel" onClick={handleMediaTap}>
                    {allMedia[currentMediaIndex].type === 'image' ? (
-                     <Image
-                       src={encodeURI(allMedia[currentMediaIndex].src)}
-                       alt={`${project.title} - Media`}
-                       fill
-                       sizes="(max-width: 768px) 100vw, 50vw"
-                       style={{ objectFit: "cover" }}
-                     />
+                      <img
+                        src={encodeURI(allMedia[currentMediaIndex].src)}
+                        alt={`${project.title} - Media`}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
                    ) : (
                      <video
                        src={encodeURI(allMedia[currentMediaIndex].src)}
